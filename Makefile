@@ -12,6 +12,10 @@ up:
 install:
 	go install $(PACKAGE_ROOT)/seed
 
+#gets the doc server up and running
+doc:
+	killall godoc; godoc -http=":7080" &
+
 #get all the deps
 deps:
 	go get -u github.com/PuerkitoBio/goquery

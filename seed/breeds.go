@@ -8,6 +8,7 @@ import (
 	"net/url"
 )
 
+// Scrapes wikipedia for the list of dog names and descriptions and returns them all
 func generateBreeds() []models.Breed {
 	doc, err := goquery.NewDocument("http://en.wikipedia.org/wiki/List_of_dog_breeds")
 
@@ -60,6 +61,7 @@ func generateBreeds() []models.Breed {
 	return breeds
 }
 
+// inserts the breeds into neo4j
 func storeBreeds(db *neoism.Database, breeds []models.Breed) {
 	//make sure the dog breed name index is there
 	cq := new(neoism.CypherQuery)

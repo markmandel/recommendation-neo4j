@@ -6,6 +6,7 @@ import (
 	"github.com/jmcvetta/neoism"
 )
 
+// dog breeds
 type Breed struct {
 	Id          int    `json:-`
 	Name        string `json:"name"`
@@ -17,9 +18,10 @@ func (b Breed) String() string {
 	return fmt.Sprintf("[ Id: %v  Breed: %v, Description: %v, Wiki: %v ]", b.Id, b.Name, b.Description, b.WikiURL)
 }
 
+// GetRandomBreed returns a random dog breed
 func GetRandomBreed(db *neoism.Database) (b *Breed, err error) {
 	result := []struct {
-		B neoism.Node // Column "n" gets automagically unmarshalled into field N
+		B neoism.Node // Column "b" gets automagically unmarshalled into field B
 	}{}
 
 	q := &neoism.CypherQuery{

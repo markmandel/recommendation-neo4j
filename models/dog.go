@@ -2,6 +2,7 @@ package models
 
 import "fmt"
 
+// A dog that is up for adoption
 type Dog struct {
 	Id      int `json:-`
 	Name    string

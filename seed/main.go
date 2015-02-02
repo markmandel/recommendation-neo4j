@@ -1,5 +1,5 @@
 /*
-Seed our data set.
+Package seed, provides seeding for our data set.
 
 We need a list of dog breeds, and pictures of dogs to go with them.
 We will scrape Wikipedia (Attribution: http://en.wikipedia.org/wiki/List_of_dog_breeds) to get the
@@ -23,7 +23,11 @@ func init() {
 }
 
 func main() {
-	db := lib.Connect()
+	db, err := lib.Connect()
+
+	if err != nil {
+		log.Fatalln("Could not connect to db", err)
+	}
 
 	switch step {
 	case "breeds":

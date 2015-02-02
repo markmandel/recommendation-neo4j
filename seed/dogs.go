@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Returns a list of dogs, each one with a random breed
 func generateDogs(db *neoism.Database) []models.Dog {
 	result := []models.Dog{}
 
@@ -29,6 +30,7 @@ func generateDogs(db *neoism.Database) []models.Dog {
 	return result
 }
 
+// Insert the dogs in neo4j.
 func storeDogs(db *neoism.Database, dogs []models.Dog) {
 	for _, dog := range dogs {
 		cq := &neoism.CypherQuery{
