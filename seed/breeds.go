@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-func GenerateBreeds() []models.Breed {
+func generateBreeds() []models.Breed {
 	doc, err := goquery.NewDocument("http://en.wikipedia.org/wiki/List_of_dog_breeds")
 
 	if err != nil {
@@ -33,8 +33,8 @@ func GenerateBreeds() []models.Breed {
 				log.Fatalln("eh, what now?", breed.String())
 			}
 
-			var err error
-			breed.WikiURL, err = url.Parse("http://en.wikipedia.org" + href)
+			ref, err := url.Parse("http://en.wikipedia.org" + href)
+			breed.WikiURL = ref.String()
 
 			if err != nil {
 				log.Fatalln("Could not parser url: ", href)
@@ -43,7 +43,7 @@ func GenerateBreeds() []models.Breed {
 			extinct := cells.Eq(2).Text() == "Extinct"
 
 			if !extinct {
-				s, err := goquery.NewDocument(breed.WikiURL.String())
+				s, err := goquery.NewDocument(breed.WikiURL)
 
 				if err != nil {
 					log.Fatalln("Could not get breed details", breed, err)
@@ -60,17 +60,11 @@ func GenerateBreeds() []models.Breed {
 	return breeds
 }
 
-func storeBreeds(breeds []models.Breed) {
-	db, err := neoism.Connect("http://localhost:7474/db/data")
-
-	if err != nil {
-		log.Fatalln("Could not connect to db", err)
-	}
-
+func storeBreeds(db *neoism.Database, breeds []models.Breed) {
 	//make sure the dog breed name index is there
 	cq := new(neoism.CypherQuery)
 	cq.Statement = `CREATE CONSTRAINT ON (b:Breed) ASSERT b.Name IS UNIQUE`
-	err = db.Cypher(cq)
+	err := db.Cypher(cq)
 
 	if err != nil {
 		log.Fatalln("Could not create unique constraint", cq, err)
@@ -85,11 +79,11 @@ func storeBreeds(breeds []models.Breed) {
 					})`
 
 	for _, b := range breeds {
-		cq.Parameters = neoism.Props{"name": b.Name, "description": b.Description, "wikiIURL": b.WikiURL.String()}
+		cq.Parameters = neoism.Props{"name": b.Name, "description": b.Description, "wikiIURL": b.WikiURL}
 		err = db.Cypher(cq)
 
 		if err != nil {
-			log.Fatalln("Could not insert data", b, cq, err)
+			log.Fatalln("Could not insert data", err, b, cq)
 		}
 	}
 }

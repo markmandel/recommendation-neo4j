@@ -11,6 +11,7 @@ package main
 
 import (
 	"flag"
+	"github.com/markmandel/recommendation-neo4j/lib"
 	"log"
 )
 
@@ -22,12 +23,14 @@ func init() {
 }
 
 func main() {
+	db := lib.Connect()
 
 	switch step {
 	case "breeds":
 		log.Println("Seeding Breeds")
-		storeBreeds(GenerateBreeds())
+		storeBreeds(db, generateBreeds())
 	case "dogs":
 		log.Println("Seeding Dogs")
+		storeDogs(db, generateDogs(db))
 	}
 }
