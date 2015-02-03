@@ -42,11 +42,13 @@ func UpdateDog(db *neoism.Database, d *Dog) error {
 	cq := &neoism.CypherQuery{
 		Statement: `
 		MATCH (d:Dog)
-		SET d.PicURL = {picURL},
-			d.Adopted = {adopted},
-			d.Name = {name}
-		WHERE ID(d) = {id}`,
-		Parameters: neoism.Props{"picURL": d.PicURL,
+		WHERE ID(d) = {id}
+		SET d.picURL = {picURL},
+			d.adopted = {adopted},
+			d.name = {name}`,
+		Parameters: neoism.Props{
+			"id":      d.Id,
+			"picURL":  d.PicURL,
 			"adopted": d.Adopted,
 			"name":    d.Name},
 	}

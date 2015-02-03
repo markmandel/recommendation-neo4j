@@ -32,5 +32,5 @@ neo4j-backup:
 	7z a $(NEO4J_DATA)/$(BACKUP_FILE) ./neo4j-data/graph.db
 
 neo4j-restore:
-	sudo fig stop
+	$(MAKE) neo4j-clean
 	cd $(NEO4J_DATA) && 7z x $(BACKUP_FILE)
