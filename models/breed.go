@@ -18,6 +18,24 @@ func (b Breed) String() string {
 	return fmt.Sprintf("[ Id: %v  Breed: %v, Description: %v, Wiki: %v ]", b.Id, b.Name, b.Description, b.WikiURL)
 }
 
+func (b *Breed) fromNode(n neoism.Node) error {
+	b.Id = n.Id()
+
+	j, err := json.Marshal(n.Data)
+
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(j, b)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GetRandomBreed returns a random dog breed
 func GetRandomBreed(db *neoism.Database) (b *Breed, err error) {
 	result := []struct {
@@ -42,17 +60,7 @@ func GetRandomBreed(db *neoism.Database) (b *Breed, err error) {
 		breedNode := result[0].B
 		breedNode.Db = db
 
-		b.Id = breedNode.Id()
-
-		j, err := json.Marshal(breedNode.Data)
-
-		if err != nil {
-			return b, err
-		}
-
-		//now put is back into the object we want
-
-		err = json.Unmarshal(j, b)
+		err = b.fromNode(breedNode)
 
 		if err != nil {
 			return b, err

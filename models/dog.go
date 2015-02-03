@@ -19,6 +19,24 @@ func (d Dog) String() string {
 	return fmt.Sprintf("[ Name: %v, Adopted: %v, PicURL: %v Breed: %v ]", d.Name, d.Adopted, d.PicURL, d.Breed)
 }
 
+func (d *Dog) fromNode(n neoism.Node) error {
+	d.Id = n.Id()
+
+	j, err := json.Marshal(n.Data)
+
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(j, d)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //update the dog. It's assumed the dog will know its ID
 func UpdateDog(db *neoism.Database, d *Dog) error {
 	cq := &neoism.CypherQuery{
@@ -39,12 +57,13 @@ func UpdateDog(db *neoism.Database, d *Dog) error {
 func ListDogs(db *neoism.Database) (results []*Dog, err error) {
 	result := []struct {
 		D neoism.Node
+		B neoism.Node
 	}{}
 
 	cq := &neoism.CypherQuery{
 		Statement: `
-		MATCH (d:Dog)
-		RETURN d
+		MATCH (d:Dog)-[:HAS_BREED]->(b:Breed)
+		RETURN d, b
 		ORDER BY d.name
 		`,
 		Result: &result,
@@ -55,22 +74,16 @@ func ListDogs(db *neoism.Database) (results []*Dog, err error) {
 	if err == nil {
 		results = []*Dog{}
 		for _, node := range result {
-			dog := new(Dog)
-
 			node.D.Db = db
-			dog.Id = node.D.Id()
+			node.B.Db = db
 
-			j, err := json.Marshal(node.D.Data)
+			dog := new(Dog)
+			breed := new(Breed)
 
-			if err != nil {
-				return results, err
-			}
+			err = dog.fromNode(node.D)
+			err = breed.fromNode(node.B)
 
-			err = json.Unmarshal(j, dog)
-
-			if err != nil {
-				return results, err
-			}
+			dog.Breed = breed
 
 			results = append(results, dog)
 		}
