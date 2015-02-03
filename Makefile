@@ -4,6 +4,8 @@ PACKAGE_ROOT=github.com/markmandel/recommendation-neo4j
 NEO4J_DATA=./neo4j-data
 BACKUP_FILE=data-backup.7z
 
+.PHONY: rescue
+
 #start it up
 up:
 	sudo fig up
@@ -12,6 +14,10 @@ up:
 install:
 	go install $(PACKAGE_ROOT)/seed
 	go install $(PACKAGE_ROOT)/rescue
+
+rescue:
+	$(MAKE) install
+	rescue
 
 #gets the doc server up and running
 doc:
@@ -22,6 +28,7 @@ deps:
 	go get -u github.com/PuerkitoBio/goquery
 	go get -u github.com/manki/flickgo
 	go get -u github.com/jmcvetta/neoism
+	go get -u github.com/gorilla/mux
 
 neo4j-clean:
 	sudo fig stop
