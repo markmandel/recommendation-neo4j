@@ -19,6 +19,11 @@ rescue:
 	$(MAKE) install
 	rescue
 
+#check the code for correctness
+check-code:
+	go vet $(PACKAGE_ROOT)/...; true
+	golint $(PACKAGE_ROOT)/...; true
+
 #gets the doc server up and running
 doc:
 	killall godoc; godoc -http=":7080" &

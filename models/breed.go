@@ -6,20 +6,20 @@ import (
 	"github.com/jmcvetta/neoism"
 )
 
-// dog breeds
+//Breed represents a dog breed
 type Breed struct {
-	Id          int    `json:-`
+	ID          int    `json:"-"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	WikiURL     string `json:"wikiURL"`
 }
 
 func (b Breed) String() string {
-	return fmt.Sprintf("[ Id: %v  Breed: %v, Description: %v, Wiki: %v ]", b.Id, b.Name, b.Description, b.WikiURL)
+	return fmt.Sprintf("[ ID: %v  Breed: %v, Description: %v, Wiki: %v ]", b.ID, b.Name, b.Description, b.WikiURL)
 }
 
 func (b *Breed) fromNode(n neoism.Node) error {
-	b.Id = n.Id()
+	b.ID = n.Id()
 
 	j, err := json.Marshal(n.Data)
 

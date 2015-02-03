@@ -44,7 +44,7 @@ func storeDogs(db *neoism.Database, dogs []models.Dog) {
 				})-[:HAS_BREED]->(b)
 			`,
 			Parameters: neoism.Props{
-				"id":      dog.Breed.Id,
+				"id":      dog.Breed.ID,
 				"name":    dog.Name,
 				"adopted": dog.Adopted,
 				"picURL":  dog.PicURL,

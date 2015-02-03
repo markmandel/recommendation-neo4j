@@ -8,7 +8,7 @@ import (
 
 // A dog that is up for adoption
 type Dog struct {
-	Id      int    `json:-`
+	Id      int    `json:"-"`
 	Name    string `json:"name"`
 	Breed   *Breed
 	Adopted bool   `json:"adopted"`
