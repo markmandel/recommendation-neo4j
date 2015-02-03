@@ -11,6 +11,7 @@ up:
 #install all the binaries
 install:
 	go install $(PACKAGE_ROOT)/seed
+	go install $(PACKAGE_ROOT)/rescue
 
 #gets the doc server up and running
 doc:
