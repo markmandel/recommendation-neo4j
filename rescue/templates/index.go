@@ -36,19 +36,36 @@ const Index = `
 <div class="jumbotron">
 	<div class="container">
 		<h1>Adopt A Dog</h1>
-		<p>Please have a look at all the wonderful dogs that are up for adpotion. Click on any of the pictures to get more detals.</p>
+
+		<p>Please have a look at all the wonderful dogs that are up for adpotion. Click on any of the pictures to get
+			more detals.</p>
 	</div>
 </div>
 
 <div class="container">
-
+	<div class="row">
+		{{range .dogs}}
+		<div class="col-sm-6 col-md-4">
+			<div class="thumbnail">
+				<img src="{{.PicURL}}">
+				<div class="caption">
+					<h3>{{.Name}}</h3>
+					<p>{{.Breed.Name}}</p>
+				</div>
+			</div>
+		</div>
+		{{end}}
+	</div>
 
 	<hr>
 
 	<footer>
-		<p>All dog breeds, descriptions and pictures are attributed. See <a href="https://github.com/markmandel/recommendation-neo4j/blob/master/Attribution.md" target="_blank">Attribution.md</a> for details.</p>
+		<p>All dog breeds, descriptions and pictures are attributed. See <a
+				href="https://github.com/markmandel/recommendation-neo4j/blob/master/Attribution.md" target="_blank">Attribution.md</a>
+			for details.</p>
 	</footer>
-</div> <!-- /container -->
+</div>
+<!-- /container -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>

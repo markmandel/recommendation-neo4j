@@ -26,7 +26,7 @@ func AddDogPicturesFlickr(db *neoism.Database) {
 	for _, dog := range dogs {
 		log.Printf("Processing: %v. Breed: %v", dog.Name, dog.Breed.Name)
 
-		q := map[string]string{"text": dog.Breed.Name, "license": "1,2,3,4,5,6,7,8", "sort": "relevence", "media": "photos", "per_page": "10"}
+		q := map[string]string{"text": dog.Breed.Name, "license": "1,2,3,4,5,6,7,8", "sort": "relevance", "media": "photos", "per_page": "10"}
 		log.Println("Search:", q)
 
 		photos, err := fc.Search(q)
