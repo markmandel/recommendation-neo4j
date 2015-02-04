@@ -37,7 +37,7 @@ const Index = `
 	<div class="container">
 		<h1>Adopt A Dog</h1>
 
-		<p>Please have a look at all the wonderful dogs that are up for adpotion. Click on any of the pictures to get
+		<p>Please have a look at all the wonderful dogs that are up for adoption.<br/>Click on any of the pictures to get
 			more detals.</p>
 	</div>
 </div>
