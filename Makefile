@@ -13,11 +13,10 @@ up:
 #install all the binaries
 install:
 	go install $(PACKAGE_ROOT)/seed
-	go install $(PACKAGE_ROOT)/rescue
 
 rescue:
-	$(MAKE) install
-	rescue
+	go build -o ./bin/rescue $(PACKAGE_ROOT)/rescue
+	./bin/rescue
 
 #check the code for correctness
 check-code:

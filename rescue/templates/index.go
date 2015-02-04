@@ -37,7 +37,8 @@ const Index = `
 	<div class="container">
 		<h1>Adopt A Dog</h1>
 
-		<p>Please have a look at all the wonderful dogs that are up for adoption.<br/>Click on any of the pictures to get
+		<p>Please have a look at all the wonderful dogs that are we have for adoption.<br/>Click on any of the pictures to
+			get
 			more detals.</p>
 	</div>
 </div>
@@ -45,11 +46,13 @@ const Index = `
 <div class="container">
 	<div class="row">
 		{{range .dogs}}
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4 dog">
 			<div class="thumbnail">
 				<img src="{{.PicURL}}">
+
 				<div class="caption">
 					<h3>{{.Name}}</h3>
+
 					<p>{{.Breed.Name}}</p>
 				</div>
 			</div>
@@ -60,15 +63,21 @@ const Index = `
 	<hr>
 
 	<footer>
-		<p>All dog breeds, descriptions and pictures are attributed. See <a
-				href="https://github.com/markmandel/recommendation-neo4j/blob/master/Attribution.md" target="_blank">Attribution.md</a>
-			for details.</p>
+		<p>All dog breed names, descriptions and pictures are licenced under Creative Commons. Attribution can be found
+		<a href="https://github.com/markmandel/recommendation-neo4j/blob/master/Attribution.md" target="_blank">here</a>.
+		</p>
 	</footer>
 </div>
 <!-- /container -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="http://brm.io/js/libs/matchHeight/jquery.matchHeight-min.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$('.dog').matchHeight();
+	});
+</script>
 </body>
 </html>
 `
