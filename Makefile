@@ -30,6 +30,7 @@ doc:
 
 #get all the deps
 deps:
+	go get -u github.com/golang/lint/golint
 	go get -u github.com/PuerkitoBio/goquery
 	go get -u github.com/manki/flickgo
 	go get -u github.com/jmcvetta/neoism

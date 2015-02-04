@@ -2,25 +2,20 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/jmcvetta/neoism"
 )
 
-// A dog that is up for adoption
+//Dog is a dog that is up for adoption
 type Dog struct {
-	Id      int    `json:"-"`
+	ID      int    `json:"-"`
 	Name    string `json:"name"`
 	Breed   *Breed
 	Adopted bool   `json:"adopted"`
 	PicURL  string `json:"picURL"`
 }
 
-func (d Dog) String() string {
-	return fmt.Sprintf("[ Name: %v, Adopted: %v, PicURL: %v Breed: %v ]", d.Name, d.Adopted, d.PicURL, d.Breed)
-}
-
 func (d *Dog) fromNode(n neoism.Node) error {
-	d.Id = n.Id()
+	d.ID = n.Id()
 
 	j, err := json.Marshal(n.Data)
 
@@ -37,7 +32,7 @@ func (d *Dog) fromNode(n neoism.Node) error {
 	return nil
 }
 
-//update the dog. It's assumed the dog will know its ID
+//UpdateDog updates the dog record. It's assumed the dog will know its ID
 func UpdateDog(db *neoism.Database, d *Dog) error {
 	cq := &neoism.CypherQuery{
 		Statement: `
@@ -47,7 +42,7 @@ func UpdateDog(db *neoism.Database, d *Dog) error {
 			d.adopted = {adopted},
 			d.name = {name}`,
 		Parameters: neoism.Props{
-			"id":      d.Id,
+			"id":      d.ID,
 			"picURL":  d.PicURL,
 			"adopted": d.Adopted,
 			"name":    d.Name},
@@ -56,6 +51,7 @@ func UpdateDog(db *neoism.Database, d *Dog) error {
 	return db.Cypher(cq)
 }
 
+//ListDogs lists all dogs in neo4j currently
 func ListDogs(db *neoism.Database) (results []*Dog, err error) {
 	result := []struct {
 		D neoism.Node

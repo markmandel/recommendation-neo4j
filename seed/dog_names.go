@@ -1,7 +1,7 @@
 package main
 
 // List of random dog names
-var DOG_NAMES = []string{
+var dogNames = []string{
 	"Buddy",
 	"Max",
 	"Molly",

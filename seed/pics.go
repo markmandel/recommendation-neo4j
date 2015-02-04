@@ -10,10 +10,10 @@ import (
 	"os"
 )
 
-const FLICKR_ENV_KEY = "FLICKR_KEY"
-const FLICKR_SECRET_ENV_KEY = "FLICKR_SECRET"
+const flickrEnvKey = "FLICKR_KEY"
+const flickrSecretEnvKey = "FLICKR_SECRET"
 
-//put pictures on any dogs that don't have them
+//AddDogPicturesFlickr puts pictures on any dogs that don't have them
 func AddDogPicturesFlickr(db *neoism.Database) {
 	dogs, err := models.ListDogs(db)
 
@@ -21,7 +21,7 @@ func AddDogPicturesFlickr(db *neoism.Database) {
 		log.Fatalln("Could not list dogs", err)
 	}
 
-	fc := flickgo.New(os.Getenv(FLICKR_ENV_KEY), os.Getenv(FLICKR_SECRET_ENV_KEY), http.DefaultClient)
+	fc := flickgo.New(os.Getenv(flickrEnvKey), os.Getenv(flickrSecretEnvKey), http.DefaultClient)
 
 	for _, dog := range dogs {
 		log.Printf("Processing: %v. Breed: %v", dog.Name, dog.Breed.Name)

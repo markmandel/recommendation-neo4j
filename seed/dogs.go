@@ -10,7 +10,7 @@ import (
 func generateDogs(db *neoism.Database) []models.Dog {
 	result := []models.Dog{}
 
-	for _, name := range DOG_NAMES {
+	for _, name := range dogNames {
 		log.Println("Generating dog: ", name)
 		dog := models.Dog{Name: name, Adopted: false}
 

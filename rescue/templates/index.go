@@ -1,6 +1,7 @@
 package templates
 
-const INDEX = `
+//Index is the index page template
+const Index = `
 <!DOCTYPE html>
 <html lang="en">
 <head>

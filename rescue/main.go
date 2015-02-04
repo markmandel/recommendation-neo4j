@@ -9,13 +9,13 @@ import (
 	"os"
 )
 
-const RESCUE_PORT_ENV_KEY = "RESCUE_PORT"
+const rescuePortEnvKey = "RESCUE_PORT"
 
 func main() {
 	r := mux.NewRouter()
 	http.Handle("/", r)
 
-	port := os.Getenv("RESCUE_PORT_ENV_KEY")
+	port := os.Getenv(rescuePortEnvKey)
 	if len(port) == 0 {
 		port = "8080"
 	}
@@ -28,7 +28,7 @@ func main() {
 var indexTemplate *template.Template
 
 func init() {
-	indexTemplate = templateMust(template.New("index").Parse(templates.INDEX))
+	indexTemplate = templateMust(template.New("index").Parse(templates.Index))
 }
 
 func templateMust(t *template.Template, err error) *template.Template {
