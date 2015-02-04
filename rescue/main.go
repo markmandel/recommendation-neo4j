@@ -11,8 +11,12 @@ import (
 
 const rescuePortEnvKey = "RESCUE_PORT"
 
+var indexTemplate *template.Template
+
 func main() {
 	r := mux.NewRouter()
+
+	r.HandleFunc("/", indexHandler)
 	http.Handle("/", r)
 
 	port := os.Getenv(rescuePortEnvKey)
@@ -24,8 +28,6 @@ func main() {
 
 	http.ListenAndServe(":"+port, nil)
 }
-
-var indexTemplate *template.Template
 
 func init() {
 	indexTemplate = templateMust(template.New("index").Parse(templates.Index))
