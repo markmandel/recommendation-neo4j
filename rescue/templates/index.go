@@ -19,6 +19,7 @@ const Index = `
 	<div class="row">
 		{{range .dogs}}
 		<div class="col-sm-6 col-md-4 dog">
+			<a href="/dog/{{.ID}}">
 			<div class="thumbnail">
 				<img src="{{.PicURL}}">
 
@@ -28,6 +29,7 @@ const Index = `
 					<p>{{.Breed.Name}}</p>
 				</div>
 			</div>
+			</a>
 		</div>
 		{{end}}
 	</div>

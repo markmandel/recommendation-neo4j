@@ -18,6 +18,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/dog/{id}", dogHandler)
 	http.Handle("/", r)
 
 	port := os.Getenv(rescuePortEnvKey)
