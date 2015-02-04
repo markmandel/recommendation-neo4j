@@ -34,13 +34,7 @@ const Index = `
 		{{end}}
 	</div>
 
-	<hr>
-
-	<footer>
-		<p>All dog breed names, descriptions and pictures are licenced under Creative Commons. Attribution can be found
-		<a href="https://github.com/markmandel/recommendation-neo4j/blob/master/Attribution.md" target="_blank">here</a>.
-		</p>
-	</footer>
+	{{template "disclaimer"}}
 </div>
 <!-- /container -->
 

@@ -38,5 +38,6 @@ func init() {
 	for _, t := range []*template.Template{indexTemplate, dogTemplate} {
 		template.Must(t.New("header").Parse(templates.Header))
 		template.Must(t.New("footer").Parse(templates.Footer))
+		template.Must(t.New("disclaimer").Parse(templates.Disclaimer))
 	}
 }
