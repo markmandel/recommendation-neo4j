@@ -12,6 +12,7 @@ import (
 const rescuePortEnvKey = "RESCUE_PORT"
 
 var indexTemplate *template.Template
+var dogTemplate *template.Template
 
 func main() {
 	r := mux.NewRouter()
@@ -30,13 +31,11 @@ func main() {
 }
 
 func init() {
-	indexTemplate = templateMust(template.New("index").Parse(templates.Index))
-}
+	indexTemplate = template.Must(template.New("index").Parse(templates.Index))
+	dogTemplate = template.Must(template.New("index").Parse(templates.Dog))
 
-func templateMust(t *template.Template, err error) *template.Template {
-	if err != nil {
-		log.Fatalln("Could not create template.", t.Name(), err)
+	for _, t := range []*template.Template{indexTemplate, dogTemplate} {
+		template.Must(t.New("header").Parse(templates.Header))
+		template.Must(t.New("footer").Parse(templates.Footer))
 	}
-
-	return t
 }

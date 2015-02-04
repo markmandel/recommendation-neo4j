@@ -28,5 +28,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	data["dogs"] = dogs
 	data["title"] = "Home"
 
-	indexTemplate.Execute(w, data)
+	err = indexTemplate.Execute(w, data)
+
+	if err != nil {
+		log.Printf("Error rendering template: %v\n", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }

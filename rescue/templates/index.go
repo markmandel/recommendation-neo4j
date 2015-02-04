@@ -2,35 +2,7 @@ package templates
 
 //Index is the index page template
 const Index = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<!-- Meta, title, CSS, favicons, etc. -->
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<title>Adopt A Dog :: {{.title}}</title>
-	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cerulean/bootstrap.min.css" rel="stylesheet">
-
-	<style type="text/css">
-		/* Move down content because we have a fixed navbar that is 50px tall */
-		body {
-			padding-top: 50px;
-			padding-bottom: 20px;
-		}
-	</style>
-</head>
-<body>
-
-<nav class="navbar navbar-inverse navbar-fixed-top">
-	<div class="container">
-		<div class="navbar-header">
-			<a class="navbar-brand" href="/">Home</a>
-		</div>
-
-	</div>
-</nav>
+{{template "header"}}
 
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
@@ -70,14 +42,5 @@ const Index = `
 </div>
 <!-- /container -->
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-<script src="http://brm.io/js/libs/matchHeight/jquery.matchHeight-min.js"></script>
-<script type="text/javascript">
-	$(function() {
-		$('.dog').matchHeight();
-	});
-</script>
-</body>
-</html>
+{{template "footer"}}
 `
