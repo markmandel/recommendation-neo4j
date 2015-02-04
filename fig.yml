@@ -10,7 +10,7 @@ rescue:
     - "80:80"
   volumes:
     - ./bin:/opt/bin
-    - ./media:/opt/media
+    - ./resources:/opt/resources
   links:
     - neo4j
   environment:

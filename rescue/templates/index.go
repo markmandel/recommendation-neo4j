@@ -2,7 +2,7 @@ package templates
 
 //Index is the index page template
 const Index = `
-{{template "header"}}
+{{template "header" .}}
 
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">

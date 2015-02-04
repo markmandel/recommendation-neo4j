@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/jmcvetta/neoism"
 )
 
@@ -51,6 +52,36 @@ func UpdateDog(db *neoism.Database, d *Dog) error {
 	return db.Cypher(cq)
 }
 
+//GetDog retrieves a dog from Neo4J. If not found, returns an error.
+func GetDog(db *neoism.Database, id int) (dog *Dog, err error) {
+	result := []struct {
+		D neoism.Node
+		B neoism.Node
+	}{}
+
+	cq := &neoism.CypherQuery{
+		Statement: `
+		MATCH (d:Dog)-[:HAS_BREED]->(b:Breed)
+		WHERE ID(d) = {id}
+		RETURN d, b
+		`,
+		Parameters: neoism.Props{"id": id},
+		Result:     &result,
+	}
+
+	err = db.Cypher(cq)
+
+	if err == nil {
+		if len(result) == 0 {
+			return dog, fmt.Errorf("Could not find a dog for id %v", id)
+		}
+
+		dog, err = createDogFromResult(db, result[0].D, result[0].B)
+	}
+
+	return
+}
+
 //ListDogs lists all dogs in neo4j currently
 func ListDogs(db *neoism.Database) (results []*Dog, err error) {
 	result := []struct {
@@ -72,20 +103,27 @@ func ListDogs(db *neoism.Database) (results []*Dog, err error) {
 	if err == nil {
 		results = []*Dog{}
 		for _, node := range result {
-			node.D.Db = db
-			node.B.Db = db
-
-			dog := new(Dog)
-			breed := new(Breed)
-
-			err = dog.fromNode(node.D)
-			err = breed.fromNode(node.B)
-
-			dog.Breed = breed
-
+			var dog *Dog
+			dog, err = createDogFromResult(db, node.D, node.B)
 			results = append(results, dog)
 		}
 	}
+
+	return
+}
+
+//createDogFromResult creates a dog from the standard cypher results
+func createDogFromResult(db *neoism.Database, dNode neoism.Node, bNode neoism.Node) (dog *Dog, err error) {
+	dNode.Db = db
+	bNode.Db = db
+
+	dog = new(Dog)
+	breed := new(Breed)
+
+	err = dog.fromNode(dNode)
+	err = breed.fromNode(bNode)
+
+	dog.Breed = breed
 
 	return
 }
