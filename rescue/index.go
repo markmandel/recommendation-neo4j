@@ -26,6 +26,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]interface{}{}
 	data["dogs"] = dogs
+	data["title"] = "Home"
 
 	indexTemplate.Execute(w, data)
 }

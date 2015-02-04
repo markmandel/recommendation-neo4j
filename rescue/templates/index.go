@@ -10,7 +10,7 @@ const Index = `
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>Adopt A Dog</title>
+	<title>Adopt A Dog :: {{.title}}</title>
 	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cerulean/bootstrap.min.css" rel="stylesheet">
 
 	<style type="text/css">
