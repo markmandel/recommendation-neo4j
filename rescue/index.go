@@ -15,6 +15,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session.Values["foo"] = "bar"
+
 	dogs, err := models.ListDogs(db)
 
 	if err != nil {
@@ -35,11 +37,18 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("Session state: %#v", session)
 	err = session.Save(r, w)
+
+	log.Printf("The current header [v2]: %#v", w.Header())
 
 	if err != nil {
 		log.Printf("Error saving session: %v\n", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	w.Header().Set("X-Testing", "HELLO?")
+
+	log.Printf("Finis!")
 }

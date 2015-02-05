@@ -93,6 +93,9 @@ func (n *Neo4JStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 	log.Printf("Setting cookie: %#v", cookie)
 
 	http.SetCookie(w, cookie)
+
+	log.Printf("The current header: %#v", w.Header())
+
 	return nil
 }
 

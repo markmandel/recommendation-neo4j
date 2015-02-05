@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/jmcvetta/neoism"
 	"github.com/markmandel/recommendation-neo4j/lib"
 	"github.com/markmandel/recommendation-neo4j/rescue/templates"
@@ -14,11 +15,11 @@ import (
 
 const rescuePortEnvKey = "RESCUE_PORT"
 const resourcesDirEnvKey = "RESOURCES_DIR"
-const siteSessionName = "AdoptADog"
+const siteSessionName = "adopt"
 
 var indexTemplate *template.Template
 var dogTemplate *template.Template
-var sessionStore *lib.Neo4JStore
+var sessionStore sessions.Store
 var db *neoism.Database
 
 func main() {
