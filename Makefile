@@ -4,7 +4,7 @@ PACKAGE_ROOT=github.com/markmandel/recommendation-neo4j
 NEO4J_DATA=./neo4j-data
 BACKUP_FILE=data-backup.7z
 
-.PHONY: rescue
+.PHONY: rescue test
 
 #start it up
 up:

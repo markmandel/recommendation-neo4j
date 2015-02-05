@@ -15,8 +15,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Values["foo"] = "bar"
-
 	dogs, err := models.ListDogs(db)
 
 	if err != nil {
@@ -29,6 +27,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	data["dogs"] = dogs
 	data["title"] = "Home"
 
+	log.Printf("Session state: %#v", session)
+	err = session.Save(r, w)
+
+	//view
 	err = indexTemplate.Execute(w, data)
 
 	if err != nil {
@@ -36,9 +38,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-
-	log.Printf("Session state: %#v", session)
-	err = session.Save(r, w)
 
 	log.Printf("The current header [v2]: %#v", w.Header())
 

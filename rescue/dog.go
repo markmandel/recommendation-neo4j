@@ -40,18 +40,19 @@ func dogHandler(w http.ResponseWriter, r *http.Request) {
 	data["dog"] = dog
 	data["title"] = fmt.Sprintf("%v - %v", dog.Name, dog.Breed.Name)
 
-	err = dogTemplate.Execute(w, data)
-
-	if err != nil {
-		log.Printf("Error rendering template: %v\n", err)
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
 	err = session.Save(r, w)
 
 	if err != nil {
 		log.Printf("Error saving session: %v\n", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	//view
+	err = dogTemplate.Execute(w, data)
+
+	if err != nil {
+		log.Printf("Error rendering template: %v\n", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
