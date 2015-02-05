@@ -65,13 +65,6 @@ func generateBreeds() []models.Breed {
 func storeBreeds(db *neoism.Database, breeds []models.Breed) {
 	//make sure the dog breed name index is there
 	cq := new(neoism.CypherQuery)
-	cq.Statement = `CREATE CONSTRAINT ON (b:Breed) ASSERT b.Name IS UNIQUE`
-	err := db.Cypher(cq)
-
-	if err != nil {
-		log.Fatalln("Could not create unique constraint", cq, err)
-	}
-
 	cq.Statement = `CREATE
 					(n:Breed
 					{

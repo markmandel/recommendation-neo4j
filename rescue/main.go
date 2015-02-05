@@ -24,6 +24,7 @@ var db *neoism.Database
 
 func main() {
 	connectDB()
+	indexes()
 	createSessions()
 	router()
 	startServer()
