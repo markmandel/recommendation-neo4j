@@ -38,5 +38,14 @@ const Index = `
 </div>
 <!-- /container -->
 
+{{define "extraJS"}}
+<script src="/resources/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$('.dog').matchHeight();
+	});
+</script>
+{{end}}
+
 {{template "footer"}}
 `

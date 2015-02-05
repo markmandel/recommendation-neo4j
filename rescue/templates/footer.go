@@ -4,12 +4,7 @@ package templates
 const Footer = `
 <script src="/resources/js/jquery.min.js"></script>
 <script src="/resources/js/bootstrap.min.js"></script>
-<script src="/resources/js/jquery.matchHeight-min.js"></script>
-<script type="text/javascript">
-	$(function() {
-		$('.dog').matchHeight();
-	});
-</script>
+{{template "extraJS"}}
 </body>
 </html>
 `

@@ -30,6 +30,6 @@ const Dog = `
 
 	{{template "disclaimer"}}
 </div>
-
+{{define "extraJS"}}{{end}}
 {{template "footer"}}
 `
