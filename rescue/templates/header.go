@@ -11,7 +11,7 @@ const Header = `
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>Adopt A Dog :: {{.title}}</title>
-	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cerulean/bootstrap.min.css" rel="stylesheet">
+	<link href="/resources/css/bootstrap.min.css" rel="stylesheet">
 
 	<style type="text/css">
 		/* Move down content because we have a fixed navbar that is 50px tall */
