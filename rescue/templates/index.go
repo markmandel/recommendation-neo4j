@@ -11,7 +11,7 @@ const Index = `
 
 		<p>Please have a look at all the wonderful dogs that are we have for adoption.<br/>Click on any of the pictures to
 			get
-			more detals.</p>
+			more details.</p>
 	</div>
 </div>
 

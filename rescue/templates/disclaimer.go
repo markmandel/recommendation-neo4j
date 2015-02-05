@@ -8,7 +8,7 @@ const Disclaimer = `
 		<p>
 			This is fake dog adoption site, for the use of generating data and displaying a recommendation engine. <a href="https://github.com/markmandel/recommendation-neo4j" target="_blank">Source Code</a>.
 		</p>
-		<p>All dog breed names, descriptions and pictures are licenced under Creative Commons. Attribution can be found
+		<p>All dog breed names, descriptions and pictures are licensed under Creative Commons. Attribution can be found
 			<a href="https://github.com/markmandel/recommendation-neo4j/blob/master/Attribution.md"
 			   target="_blank">here</a>.
 		</p>
