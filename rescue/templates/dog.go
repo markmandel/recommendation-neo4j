@@ -24,7 +24,7 @@ const Dog = `
 			<p>{{.dog.Breed.Description}}</p>
 		</div>
 		<div class="col-sm-9">
-			<img class="img-responsive" src="{{.dog.PicURL}}"/>
+			<img class="img-responsive" src="/resources/images/{{.dog.ID}}-{{.dog.Name}}.jpg">
 		</div>
 	</div>
 

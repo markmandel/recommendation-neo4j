@@ -21,7 +21,7 @@ const Index = `
 		<div class="col-sm-6 col-md-4 dog">
 			<a href="/dog/{{.ID}}">
 			<div class="thumbnail">
-				<img src="{{.PicURL}}">
+				<img src="/resources/images/{{.ID}}-{{.Name}}.jpg">
 
 				<div class="caption">
 					<h3>{{.Name}}</h3>

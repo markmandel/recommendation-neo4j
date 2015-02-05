@@ -18,7 +18,7 @@ import (
 var step string
 
 func init() {
-	flag.StringVar(&step, "step", "", "Which step do you want in the sequence of 'breeds,dogs,flickr'")
+	flag.StringVar(&step, "step", "", "Which step do you want in the sequence of 'breeds,dogs,flickr,download'")
 	flag.Parse()
 }
 
@@ -39,6 +39,9 @@ func main() {
 	case "flickr":
 		log.Println("Getting images for the dogs")
 		AddDogPicturesFlickr(db)
+	case "download":
+		log.Println("Downloading images for dogs")
+		DownloadDogPictures(db)
 	}
 
 }
