@@ -118,15 +118,42 @@ func (n *Neo4JStore) load(s *sessions.Session) error {
 }
 
 func (n *Neo4JStore) save(s *sessions.Session) error {
-	cq := &neoism.CypherQuery{
-		Statement: `
+	props := interfaceMapToStringMap(s.Values)
+	props[identPropertyKey] = s.ID
+
+	qs := []*neoism.CypherQuery{
+		&neoism.CypherQuery{
+			Statement: `
 			MERGE (s:MuxSession { ident:{ident} })
 			RETURN s
 		`,
-		Parameters: neoism.Props{"ident": s.ID},
+			Parameters: neoism.Props{"ident": s.ID},
+		},
+		&neoism.CypherQuery{
+			Statement: `
+			MATCH (s:MuxSession { ident:{ident} })
+			SET s = {props}
+			RETURN s
+		`,
+			Parameters: neoism.Props{"ident": s.ID, "props": props},
+		},
 	}
 
-	return n.db.Cypher(cq)
+	tx, err := n.db.Begin(qs)
+
+	if err != nil {
+		log.Printf("Error attempting to save session values: %v. %#v.", err, qs)
+
+		err := tx.Rollback()
+
+		if err != nil {
+			return err
+		}
+
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func stringMapToInterfaceMap(src map[string]interface{}) map[interface{}]interface{} {
