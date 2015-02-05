@@ -15,3 +15,4 @@ rescue:
     - neo4j
   environment:
     - NEO4J_HOST=http://neo4j:7474/db/data
+    - RESOURCES_DIR=/opt/resources

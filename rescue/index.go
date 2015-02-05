@@ -7,6 +7,14 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := sessionStore.Get(r, siteSessionName)
+
+	if err != nil {
+		log.Printf("Error getting session: %v\n", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
 	dogs, err := models.ListDogs(db)
 
 	if err != nil {
@@ -23,6 +31,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Printf("Error rendering template: %v\n", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	err = session.Save(r, w)
+
+	if err != nil {
+		log.Printf("Error saving session: %v\n", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}

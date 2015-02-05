@@ -14,6 +14,7 @@ import (
 
 const rescuePortEnvKey = "RESCUE_PORT"
 const resourcesDirEnvKey = "RESOURCES_DIR"
+const siteSessionName = "AdoptADog"
 
 var indexTemplate *template.Template
 var dogTemplate *template.Template
@@ -25,7 +26,6 @@ func main() {
 	createSessions()
 	router()
 	startServer()
-
 }
 
 func init() {

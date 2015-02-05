@@ -10,6 +10,14 @@ import (
 )
 
 func dogHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := sessionStore.Get(r, siteSessionName)
+
+	if err != nil {
+		log.Printf("Error getting session: %v\n", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -40,4 +48,11 @@ func dogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = session.Save(r, w)
+
+	if err != nil {
+		log.Printf("Error saving session: %v\n", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }

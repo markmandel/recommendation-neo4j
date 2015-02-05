@@ -1,8 +1,10 @@
 package lib
 
 import (
+	"github.com/cenkalti/backoff"
 	"github.com/jmcvetta/neoism"
 	"os"
+	"time"
 )
 
 const neo4jEnvKey = "NEO4J_HOST"
@@ -16,5 +18,16 @@ func Connect() (*neoism.Database, error) {
 		host = "http://localhost:7474/db/data"
 	}
 
-	return neoism.Connect(host)
+	//retry for a few minutes, since the order things come up may be slow.
+	eb := backoff.NewExponentialBackOff()
+	eb.MaxElapsedTime = time.Minute
+
+	var db *neoism.Database
+	err := backoff.Retry(func() error {
+		var err error
+		db, err = neoism.Connect(host)
+		return err
+	}, eb)
+
+	return db, err
 }

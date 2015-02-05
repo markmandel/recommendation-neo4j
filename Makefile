@@ -36,6 +36,7 @@ deps:
 	go get -u github.com/jmcvetta/neoism
 	go get -u github.com/gorilla/mux
 	go get -u github.com/gorilla/sessions
+	go get -u github.com/cenkalti/backoff
 
 neo4j-clean:
 	sudo fig stop
