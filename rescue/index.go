@@ -27,8 +27,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	data["dogs"] = dogs
 	data["title"] = "Home"
 
-	log.Printf("Session state: %#v", session)
 	err = session.Save(r, w)
+
+	if err != nil {
+		log.Printf("Error saving session: %v\n", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
 	//view
 	err = indexTemplate.Execute(w, data)
@@ -38,16 +43,4 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-
-	log.Printf("The current header [v2]: %#v", w.Header())
-
-	if err != nil {
-		log.Printf("Error saving session: %v\n", err)
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	w.Header().Set("X-Testing", "HELLO?")
-
-	log.Printf("Finis!")
 }

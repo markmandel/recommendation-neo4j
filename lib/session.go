@@ -46,7 +46,6 @@ func (n *Neo4JStore) Get(r *http.Request, name string) (*sessions.Session, error
 //
 // See CookieStore.New().
 func (n *Neo4JStore) New(r *http.Request, name string) (*sessions.Session, error) {
-	log.Printf("Creating a new session: %v", name)
 	session := sessions.NewSession(n, name)
 	opts := *n.Options
 	session.Options = &opts
@@ -54,27 +53,19 @@ func (n *Neo4JStore) New(r *http.Request, name string) (*sessions.Session, error
 	var err error
 	if c, errCookie := r.Cookie(name); errCookie == nil {
 		err = securecookie.DecodeMulti(name, c.Value, &session.ID, n.Codecs...)
-		log.Printf("Decoding the cookie: %v, %#v", err, session)
 		if err == nil {
 			err = n.load(session)
-			log.Printf("Attempting to load the session: %v, %#v", err, session)
 			if err == nil {
 				session.IsNew = false
 			}
 		}
-	} else {
-		log.Printf("Error on cookie: %#v name: %v", errCookie, name)
 	}
-
-	log.Printf("New Session is: %#v. Err: %#v", session, err)
 
 	return session, err
 }
 
 // Save adds a single session to the response.
 func (n *Neo4JStore) Save(r *http.Request, w http.ResponseWriter, session *sessions.Session) error {
-	log.Printf("Saving this session: %#v", session)
-
 	if session.ID == "" {
 		session.ID = strings.TrimRight(
 			base32.StdEncoding.EncodeToString(
@@ -90,11 +81,7 @@ func (n *Neo4JStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 
 	cookie := sessions.NewCookie(session.Name(), encoded, session.Options)
 
-	log.Printf("Setting cookie: %#v", cookie)
-
 	http.SetCookie(w, cookie)
-
-	log.Printf("The current header: %#v", w.Header())
 
 	return nil
 }
@@ -131,14 +118,15 @@ func (n *Neo4JStore) load(s *sessions.Session) error {
 }
 
 func (n *Neo4JStore) save(s *sessions.Session) error {
-	props := interfaceMapToStringMap(s.Values)
-	props[identPropertyKey] = s.ID
+	cq := &neoism.CypherQuery{
+		Statement: `
+			MERGE (s:MuxSession { ident:{ident} })
+			RETURN s
+		`,
+		Parameters: neoism.Props{"ident": s.ID},
+	}
 
-	_, _, err := n.db.GetOrCreateNode("MuxSession", identPropertyKey, props)
-
-	log.Printf("Attempting to save session: %#v | %#v. Any error? %#v", s, props, err)
-
-	return err
+	return n.db.Cypher(cq)
 }
 
 func stringMapToInterfaceMap(src map[string]interface{}) map[interface{}]interface{} {
