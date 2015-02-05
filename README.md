@@ -12,3 +12,12 @@ The go binaries are committed to the repository, so they will just run.
 ```bash
 make up
 ```
+
+
+## Interesting Cypher Queries
+
+### Sessions to PageViews to Graphs
+
+```cypher
+MATCH (s:MuxSession)-[:`HAS_VIEWED`]->(p:PageView)-[WITH_DOG]->(d:Dog) RETURN s,p,d
+```

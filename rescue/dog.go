@@ -36,6 +36,12 @@ func dogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = models.InsertPageView(db, session, dog)
+
+	if err != nil {
+		log.Printf("Error inserting page view for dog. %v", err)
+	}
+
 	data := map[string]interface{}{}
 	data["dog"] = dog
 	data["anchor"] = "#" + dog.Name
