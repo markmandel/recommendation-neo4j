@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/markmandel/recommendation-neo4j/lib"
 	"github.com/markmandel/recommendation-neo4j/models"
 	"log"
 	"net/http"
@@ -12,13 +11,6 @@ import (
 
 func dogHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	db, err := lib.Connect()
-
-	if err != nil {
-		log.Printf("Error getting data connection: %v\n", err)
-		http.Error(w, err.Error(), 500)
-		return
-	}
 
 	id, err := strconv.Atoi(vars["id"])
 

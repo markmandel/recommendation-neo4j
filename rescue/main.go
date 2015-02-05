@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/jmcvetta/neoism"
+	"github.com/markmandel/recommendation-neo4j/lib"
 	"github.com/markmandel/recommendation-neo4j/rescue/templates"
 	"html/template"
 	"log"
@@ -15,8 +17,45 @@ const resourcesDirEnvKey = "RESOURCES_DIR"
 
 var indexTemplate *template.Template
 var dogTemplate *template.Template
+var sessionStore *lib.Neo4JStore
+var db *neoism.Database
 
 func main() {
+	connectDB()
+	createSessions()
+	router()
+	startServer()
+
+}
+
+func init() {
+	//set up all my templates with the standard dependencies.
+	indexTemplate = template.Must(template.New("index").Parse(templates.Index))
+	dogTemplate = template.Must(template.New("index").Parse(templates.Dog))
+
+	for _, t := range []*template.Template{indexTemplate, dogTemplate} {
+		template.Must(t.New("header").Parse(templates.Header))
+		template.Must(t.New("footer").Parse(templates.Footer))
+		template.Must(t.New("disclaimer").Parse(templates.Disclaimer))
+	}
+}
+
+//connectDB sets up the neo4j db connection
+func connectDB() {
+	var err error
+	db, err = lib.Connect()
+
+	if err != nil {
+		log.Fatalf("Could not connect to neo4j. %v", err)
+	}
+}
+
+func createSessions() {
+	sessionStore = lib.NewNeo4JStore(db, []byte("something-not-very-secret"))
+}
+
+//router sets up the http routes
+func router() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", indexHandler)
@@ -38,7 +77,9 @@ func main() {
 	r.Handle("/resources/{dir}/{file}", http.StripPrefix("/resources/", staticHandler))
 
 	http.Handle("/", r)
+}
 
+func startServer() {
 	port := os.Getenv(rescuePortEnvKey)
 
 	if len(port) == 0 {
@@ -51,17 +92,5 @@ func main() {
 
 	if err != nil {
 		log.Fatalf("Error starting server: %v", err)
-	}
-}
-
-func init() {
-	//set up all my templates with the standard dependencies.
-	indexTemplate = template.Must(template.New("index").Parse(templates.Index))
-	dogTemplate = template.Must(template.New("index").Parse(templates.Dog))
-
-	for _, t := range []*template.Template{indexTemplate, dogTemplate} {
-		template.Must(t.New("header").Parse(templates.Header))
-		template.Must(t.New("footer").Parse(templates.Footer))
-		template.Must(t.New("disclaimer").Parse(templates.Disclaimer))
 	}
 }
