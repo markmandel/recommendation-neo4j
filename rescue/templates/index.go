@@ -18,7 +18,7 @@ const Index = `
 <div class="container">
 	<div class="row">
 		{{range .dogs}}
-		<div class="col-sm-6 col-md-4 dog">
+		<div class="col-sm-6 col-md-4 dog" id="{{.Name}}">
 			<a href="/dog/{{.ID}}">
 			<div class="thumbnail">
 				<img src="/resources/images/{{.ID}}-{{.Name}}.jpg">

@@ -38,6 +38,7 @@ func dogHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]interface{}{}
 	data["dog"] = dog
+	data["anchor"] = "#" + dog.Name
 	data["title"] = fmt.Sprintf("%v - %v", dog.Name, dog.Breed.Name)
 
 	err = session.Save(r, w)
