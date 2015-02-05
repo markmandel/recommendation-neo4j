@@ -12,6 +12,7 @@ up:
 
 #install all the binaries
 install:
+	go install github.com/golang/lint/golint
 	go install $(PACKAGE_ROOT)/seed
 
 rescue:
@@ -34,6 +35,7 @@ deps:
 	go get -u github.com/manki/flickgo
 	go get -u github.com/jmcvetta/neoism
 	go get -u github.com/gorilla/mux
+	go get -u github.com/gorilla/sessions
 
 neo4j-clean:
 	sudo fig stop
