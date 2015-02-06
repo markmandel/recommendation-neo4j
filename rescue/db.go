@@ -9,7 +9,6 @@ import (
 func indexes() {
 	log.Printf("Applying indexes and contraints")
 	indexes := []string{
-		"DROP CONSTRAINT ON (b:Breed) ASSERT b.Name IS UNIQUE",
 		"CREATE CONSTRAINT ON (b:Breed) ASSERT b.name IS UNIQUE",
 		"CREATE CONSTRAINT ON (d:Dog) ASSERT d.name IS UNIQUE",
 		"CREATE CONSTRAINT ON (s:MuxSession) ASSERT s.name IS UNIQUE",
