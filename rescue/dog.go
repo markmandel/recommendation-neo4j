@@ -40,10 +40,21 @@ func dogHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Printf("Error inserting page view for dog. %v", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	alsoLookedAt, err := models.PeopleWhoLookedAtDogAlsoLookedAt(db, dog, session)
+
+	if err != nil {
+		log.Printf("Error getting looked at recommendation. %v", err)
+		http.Error(w, err.Error(), 500)
+		return
 	}
 
 	data := map[string]interface{}{}
 	data["dog"] = dog
+	data["alsoLookedAt"] = alsoLookedAt
 	data["anchor"] = "#" + dog.Name
 	data["title"] = fmt.Sprintf("%v - %v", dog.Name, dog.Breed.Name)
 

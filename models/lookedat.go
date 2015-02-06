@@ -23,14 +23,9 @@ func PeopleWhoLookedAtDogAlsoLookedAt(db *neoism.Database, d *Dog, s *sessions.S
 			ID(recommendation) <> ID(origin)
 			AND recommendation.adopted = false
 			AND session.ident <> {ident}
-		WITH COUNT(DISTINCT view) as total, MAX(view.timestamp) as latest, recommendation, breed
-		MATCH (current:MuxSession)-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(viewed:Dog)
-		WHERE
-			current.ident = {ident}
-			AND recommendation <> viewed
-		RETURN DISTINCT total, recommendation, breed, latest
+		RETURN COUNT(DISTINCT view) as total, MAX(view.timestamp) as latest, recommendation, breed
 		ORDER BY total DESC, latest DESC
-		LIMIT 10
+		LIMIT 6
 		`,
 		Parameters: neoism.Props{"id": d.ID, "ident": s.ID},
 		Result:     &result,

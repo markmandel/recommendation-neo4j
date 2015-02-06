@@ -12,14 +12,8 @@ const Header = `
 
 	<title>Adopt A Dog :: {{.title}}</title>
 	<link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resources/css/style.css" rel="stylesheet">
 
-	<style type="text/css">
-		/* Move down content because we have a fixed navbar that is 50px tall */
-		body {
-			padding-top: 50px;
-			padding-bottom: 20px;
-		}
-	</style>
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
