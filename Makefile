@@ -4,7 +4,7 @@ PACKAGE_ROOT=github.com/markmandel/recommendation-neo4j
 NEO4J_DATA=./neo4j-data
 BACKUP_FILE=data-backup.7z
 
-.PHONY: rescue test
+.PHONY: rescue test deviation
 
 #start it up
 up:
@@ -18,6 +18,10 @@ install:
 rescue:
 	go build -o ./bin/rescue $(PACKAGE_ROOT)/rescue
 	./bin/rescue
+
+deviation:
+	go build -o ./bin/deviation $(PACKAGE_ROOT)/deviation
+	./bin/deviation
 
 #check the code for correctness
 check-code:

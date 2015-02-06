@@ -6,6 +6,8 @@ import (
 )
 
 /*
+Useful debug Cyphers.
+
 MATCH (leftD:Dog),(rightD:Dog)
 WHERE ID(leftD) = 547 AND ID(rightD) = 492
 MERGE (leftD)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD)
@@ -40,8 +42,12 @@ func CalculateDerivatives(db *neoism.Database) error {
 		return err
 	}
 
+	total := len(dogs)
+
 	//for every combination of i and j
-	for _, i := range dogs {
+	for counter, i := range dogs {
+		log.Printf("Calculating derivatives for block %v/%v", counter, total)
+
 		for _, j := range dogs {
 			err := calculateSingleDerivative(db, i, j)
 
