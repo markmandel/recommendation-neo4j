@@ -15,22 +15,35 @@ RETURN derivative
 
 MATCH (leftS:MuxSession)-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(leftD:Dog)
 WHERE ID(leftD) = 547
+
 WITH leftS
 MATCH (rightS:MuxSession)-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(rightD:Dog)
-WHERE ID(rightD) = 492
-AND leftS = rightS
-WITH COUNT(DISTINCT leftS) as elemCount //count how many sessions we have
+WHERE
+	ID(rightD) = 492
+	AND
+	leftS = rightS
+
+WITH COUNT(DISTINCT leftS) as totalSessions //count how many sessions we have
+MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
+WHERE ID(leftD) = 547 AND ID(rightD) = 492
+SET d.totalSessions = totalSessions //set the value of how many sessions we have. Need this for actual recommendations.
+
+WITH totalSessions
 MATCH (leftS:MuxSession)-[:HAS_VIEWED]->(leftP:PageView)-[:WITH_DOG]->(leftD:Dog)
 WHERE ID(leftD) = 547
-WITH leftD, leftS, COUNT(DISTINCT leftP) as leftTotal, elemCount
+
+WITH leftD, leftS, COUNT(DISTINCT leftP) as leftTotal, totalSessions
 MATCH (rightS:MuxSession)-[:HAS_VIEWED]->(rightP:PageView)-[:WITH_DOG]->(rightD:Dog)
 WHERE ID(rightD) = 492
 AND leftS = rightS
-WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/elemCount) as stepDerivative //get each value for each session
-WITH SUM(stepDerivative) as derivative //combine them all up
+
+WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/totalSessions) as stepDerivative //get the average deviation for each session
+
+WITH SUM(stepDerivative) as derivative //add them all up
 MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
 WHERE ID(leftD) = 547 AND ID(rightD) = 492
-SET d.derivative = derivative
+SET d.derivative = derivative //finally also set the actual deviation value.
+RETURN d
 */
 
 //CalculateDerivatives calculates and stores all the derivatives for all
@@ -99,24 +112,38 @@ func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) []*neoism.Cy
 			Parameters: props,
 		},
 		&neoism.CypherQuery{
-			Statement: `MATCH (leftS:MuxSession)-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(leftD:Dog)
+			Statement: `
+			MATCH (leftS:MuxSession)-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(leftD:Dog)
 			WHERE ID(leftD) = {left}
+
 			WITH leftS
 			MATCH (rightS:MuxSession)-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(rightD:Dog)
-			WHERE ID(rightD) = {right}
-			AND leftS = rightS
-			WITH COUNT(DISTINCT leftS) as elemCount //count how many sessions we have
+			WHERE
+				ID(rightD) = {right}
+				AND
+				leftS = rightS
+
+			WITH COUNT(DISTINCT leftS) as totalSessions //count how many sessions we have
+			MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
+			WHERE ID(leftD) = {left} AND ID(rightD) = {right}
+			SET d.totalSessions = totalSessions //set the value of how many sessions we have. Need this for actual recommendations.
+
+			WITH totalSessions
 			MATCH (leftS:MuxSession)-[:HAS_VIEWED]->(leftP:PageView)-[:WITH_DOG]->(leftD:Dog)
 			WHERE ID(leftD) = {left}
-			WITH leftD, leftS, COUNT(DISTINCT leftP) as leftTotal, elemCount
+
+			WITH leftD, leftS, COUNT(DISTINCT leftP) as leftTotal, totalSessions
 			MATCH (rightS:MuxSession)-[:HAS_VIEWED]->(rightP:PageView)-[:WITH_DOG]->(rightD:Dog)
 			WHERE ID(rightD) = {right}
 			AND leftS = rightS
-			WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/elemCount) as stepDerivative //get each value for each session
-			WITH SUM(stepDerivative) as derivative //combine them all up
+
+			WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/totalSessions) as stepDerivative //get the average deviation for each session
+
+			WITH SUM(stepDerivative) as derivative //add them all up
 			MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
 			WHERE ID(leftD) = {left} AND ID(rightD) = {right}
-			SET d.derivative = derivative
+			SET d.derivative = derivative //finally also set the actual deviation value.
+			RETURN d
 			`,
 			Parameters: props,
 		},
