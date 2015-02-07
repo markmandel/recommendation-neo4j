@@ -154,49 +154,25 @@ func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) []*neoism.Cy
 Determining the actual recommendation.
 
 //all dogs that have been 'rated'(viewed) for this session, with their view count
+MATCH(:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(view:PageView)-[:WITH_DOG]->(viewedDog:Dog)
+WITH viewedDog, COUNT(DISTINCT view) as pageViews
 
-//score for a particular dog.
-MATCH(s:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(p:PageView)-[:WITH_DOG]->(rightD:Dog)
-WITH rightD, COUNT(DISTINCT p) as views
+//all dogs this session that have not been viewed, (and aren't adopted)
+MATCH (recommendation:Dog { adopted: false })-[:HAS_BREED]->(breed:Breed)
+WHERE NOT (:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(recommendation)
+WITH DISTINCT recommendation, breed, viewedDog, pageViews
 
-MATCH (leftD)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD)
-WHERE ID(leftD) = 554
-WITH ((derivative.derivative + views) * derivative.totalSessions) as score
+//for each dog that has been viewed, add the number of views to the average deviation from recommendation->viewedDog
+MATCH (recommendation)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(viewedDog)
+WITH ((derivative.derivative + pageViews) * derivative.totalSessions) as score, derivative.totalSessions as totalSessions, recommendation, breed
 
-WITH SUM(score) as numerator
+//SUM all the new scores per recommendation for the numerators, and the SUM of the totalSessions for the denominator
+WITH SUM(score) as numerator, SUM(totalSessions) as denominator, recommendation, breed
+WHERE denominator > 0
 
-MATCH(s:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(p:PageView)-[:WITH_DOG]->(rightD:Dog)
-WITH  rightD, COUNT(DISTINCT p) as views, numerator
-
-MATCH (leftD)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD)
-WHERE ID(leftD) = 554
-RETURN TOFLOAT(numerator) / SUM(derivative.totalSessions)
-
-
-//numerators for all dogs not in the current session's viewed set
-MATCH(s:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(p:PageView)-[:WITH_DOG]->(rightD:Dog)
-WITH rightD, COUNT(DISTINCT p) as rightViews
-
-MATCH (leftD:Dog)-[:HAS_BREED]->(leftBreed:Breed)
-WHERE NOT (:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(leftD)
-WITH DISTINCT leftD, leftBreed, rightD, rightViews
-
-MATCH (leftD)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD)
-WITH ((derivative.derivative + rightViews) * derivative.totalSessions) as score, leftD, leftBreed
-
-RETURN SUM(score) as numerator, leftD, leftBreed, ID(leftD) as sort
-ORDER BY sort
-
-//denominators for all dogs not in the current session's viewed set
-MATCH(s:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(p:PageView)-[:WITH_DOG]->(rightD:Dog)
-WITH rightD, COUNT(DISTINCT p) as rightViews
-
-MATCH (leftD:Dog)
-WHERE NOT (:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5RJAQ'})-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(leftD)
-WITH DISTINCT leftD, rightD, rightViews
-
-MATCH (leftD)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD)
-RETURN SUM(derivative.totalSessions), ID(leftD) as sort
-ORDER BY sort
+//Wrap it up in a bow, and hand it off
+RETURN (numerator/denominator) as expectedViews, recommendation, breed
+ORDER BY expectedViews DESC
+LIMIT 6
 
 */

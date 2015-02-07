@@ -12,6 +12,7 @@ func indexes() {
 		"CREATE CONSTRAINT ON (b:Breed) ASSERT b.name IS UNIQUE",
 		"CREATE CONSTRAINT ON (d:Dog) ASSERT d.name IS UNIQUE",
 		"CREATE CONSTRAINT ON (s:MuxSession) ASSERT s.name IS UNIQUE",
+		"CREATE INDEX ON :Dog(adopted)",
 	}
 
 	cq := new(neoism.CypherQuery)
