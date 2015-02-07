@@ -46,25 +46,48 @@ func CalculateDerivatives(db *neoism.Database) error {
 
 	//for every combination of i and j
 	for counter, i := range dogs {
-		log.Printf("Calculating derivatives for block %v/%v", counter, total)
+		log.Printf("Calculating derivatives for block %v/%v", counter+1, total)
+
+		qs := []*neoism.CypherQuery{}
 
 		for _, j := range dogs {
-			err := calculateSingleDerivative(db, i, j)
+			part := calculateSingleDerivative(db, i, j)
+			qs = append(qs, part...)
+		}
+
+		//batch up each 100
+		tx, err := db.Begin(qs)
+
+		if err != nil {
+			log.Printf("Error attempting to store derivative values: %v. %#v.", err, qs)
+
+			err := tx.Rollback()
 
 			if err != nil {
 				return err
 			}
+
+			return err
 		}
+
+		err = tx.Commit()
+
+		if err != nil {
+			return err
+		}
+
+		//reset array
+		qs = nil
 	}
 
 	return nil
 }
 
-//calculateSingleDerivative calculates the derivative for a
+//calculateSingleDerivative returns the Cypher query to calculates the derivative for a
 //left and right dog
-func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) error {
+func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) []*neoism.CypherQuery {
 	props := neoism.Props{"left": l.ID, "right": r.ID}
-	qs := []*neoism.CypherQuery{
+	return []*neoism.CypherQuery{
 		//First create the relationship, if it's not there already
 		&neoism.CypherQuery{
 			Statement: `
@@ -98,20 +121,4 @@ func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) error {
 			Parameters: props,
 		},
 	}
-
-	tx, err := db.Begin(qs)
-
-	if err != nil {
-		log.Printf("Error attempting to store derivative values: %v. %#v.", err, qs)
-
-		err := tx.Rollback()
-
-		if err != nil {
-			return err
-		}
-
-		return err
-	}
-
-	return tx.Commit()
 }
