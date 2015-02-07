@@ -5,7 +5,7 @@ neo4j:
   volumes:
     - ./neo4j-data:/opt/data
 rescue:
-  build: ./
+  build: ./rescue
   ports:
     - "80:80"
   volumes:
@@ -16,3 +16,11 @@ rescue:
   environment:
     - NEO4J_HOST=http://neo4j:7474/db/data
     - RESOURCES_DIR=/opt/resources
+deviation:
+  build: ./deviation
+  volumes:
+    - ./bin:/opt/bin
+  links:
+    - neo4j
+  environment:
+    - NEO4J_HOST=http://neo4j:7474/db/data
