@@ -20,7 +20,7 @@ func main() {
 
 	log.Printf("Starting to calculate derivatives...")
 
-	err = models.CalculateDerivatives(db)
+	err = models.CalculateWeightedSlopeOneDerivatives(db)
 
 	if err != nil {
 		log.Fatalf("Error calculating derivatives: %v", err)

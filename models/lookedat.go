@@ -7,7 +7,6 @@ import (
 
 //PeopleWhoLookedAtDogAlsoLookedAt sends back all dogs that were also looked at
 //by other sessions, in a count descending order.
-//Removed any dogs that the user has already looked at.
 func PeopleWhoLookedAtDogAlsoLookedAt(db *neoism.Database, d *Dog, s *sessions.Session) (results []*Dog, err error) {
 	result := []struct {
 		Recommendation neoism.Node

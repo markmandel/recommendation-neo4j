@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/gorilla/sessions"
 	"github.com/jmcvetta/neoism"
 	"log"
 )
@@ -46,9 +47,9 @@ SET d.derivative = derivative //finally also set the actual deviation value.
 RETURN d
 */
 
-//CalculateDerivatives calculates and stores all the derivatives for all
+//CalculateWeightedSlopeOneDerivatives calculates and stores all the derivatives for all
 //the combinations of Dogs.
-func CalculateDerivatives(db *neoism.Database) error {
+func CalculateWeightedSlopeOneDerivatives(db *neoism.Database) error {
 	dogs, err := ListDogs(db)
 
 	if err != nil {
@@ -176,3 +177,53 @@ ORDER BY expectedViews DESC
 LIMIT 6
 
 */
+
+//WeightedSlopeOneRecommendation returns a recommendation based on the
+//Weighted Slope One alogorithm.
+func WeightedSlopeOneRecommendation(db *neoism.Database, s *sessions.Session) (results []*Dog, err error) {
+	result := []struct {
+		Recommendation neoism.Node
+		Breed          neoism.Node
+	}{}
+
+	cq := &neoism.CypherQuery{
+		Statement: `
+		//all dogs that have been 'rated'(viewed) for this session, with their view count
+		MATCH(:MuxSession {ident: {ident}})-[:HAS_VIEWED]->(view:PageView)-[:WITH_DOG]->(viewedDog:Dog)
+		WITH viewedDog, COUNT(DISTINCT view) as pageViews
+
+		//all dogs this session that have not been viewed, (and aren't adopted)
+		MATCH (recommendation:Dog { adopted: false })-[:HAS_BREED]->(breed:Breed)
+		WHERE NOT (:MuxSession {ident: {ident}})-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(recommendation)
+		WITH DISTINCT recommendation, breed, viewedDog, pageViews
+
+		//for each dog that has been viewed, add the number of views to the average deviation from recommendation->viewedDog
+		MATCH (recommendation)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(viewedDog)
+		WITH ((derivative.derivative + pageViews) * derivative.totalSessions) as score, derivative.totalSessions as totalSessions, recommendation, breed
+
+		//SUM all the new scores per recommendation for the numerators, and the SUM of the totalSessions for the denominator
+		WITH SUM(score) as numerator, SUM(totalSessions) as denominator, recommendation, breed
+		WHERE denominator > 0
+
+		//Wrap it up in a bow, and hand it off
+		RETURN (numerator/denominator) as expectedViews, recommendation, breed
+		ORDER BY expectedViews DESC
+		LIMIT 6
+		`,
+		Parameters: neoism.Props{"ident": s.ID},
+		Result:     &result,
+	}
+
+	err = db.Cypher(cq)
+
+	if err == nil {
+		results = []*Dog{}
+		for _, node := range result {
+			var dog *Dog
+			dog, err = createDogFromResult(db, node.Recommendation, node.Breed)
+			results = append(results, dog)
+		}
+	}
+
+	return
+}

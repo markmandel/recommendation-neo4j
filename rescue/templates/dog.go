@@ -32,10 +32,10 @@ const Dog = `
 	{{if .alsoLookedAt}}
 	<div class="row" id="lookedat">
 		<div class="col-sm-12">
-			<h4>People who looked at this dog also looked at</h4>
+			<h4>People who looked at this dog also looked at...</h4>
 		</div>
 		{{range .alsoLookedAt}}
-		<div class="col-xs-3 col-md-2">
+		<div class="col-xs-4 col-md-2 recommendation">
 			<a href="/dog/{{.ID}}" class="thumbnail" title="{{.Name}} - {{.Breed.Name}}">
 				<img src="/resources/images/{{.ID}}-{{.Name}}.jpg" alt="{{.Name}} - {{.Breed.Name}}">
 			</a>
@@ -46,6 +46,12 @@ const Dog = `
 
 	{{template "disclaimer"}}
 </div>
-{{define "extraJS"}}{{end}}
+{{define "extraJS"}}
+<script type="text/javascript">
+	$(function() {
+		$('.recommendation').matchHeight();
+	});
+</script>
+{{end}}
 {{template "footer"}}
 `
