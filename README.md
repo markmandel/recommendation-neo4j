@@ -17,7 +17,7 @@ make up
 
 ## Interesting Cypher Queries
 
-### Sessions to PageViews to Graphs
+### Sessions to PageViews to Dogs
 
 ```cypher
 MATCH (s:MuxSession)-[:`HAS_VIEWED`]->(p:PageView)-[WITH_DOG]->(d:Dog) RETURN s,p,d
