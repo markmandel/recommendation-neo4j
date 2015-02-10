@@ -122,9 +122,6 @@ class: center, middle, inverse, large
 ???
 
 - Dog Rescue++
-- Scrapped Wikipedia for Breeds
-- Took a list of dog names - gave each one a random breed
-- Hit up Flickr for CC images of each breed
 
 ---
 
@@ -148,7 +145,7 @@ class: center, middle, inverse, large
 
 class: center, middle, inverse, large
 
-# Implicit<br/>vs<br/>Explicit Ratings
+# Explicit <br/>vs<br/>Implicit Ratings
 
 ???
 
@@ -242,8 +239,9 @@ ORDER BY total DESC
 
 ---
 
-# Example result image
-*Image of the results (Browse site)*
+class: center, middle, inverse, large
+
+# People Who Looked At This Dog Also Looked At...
 <a href="http://localhost/?r=looked" target="_blank">open</a>
 
 ???
@@ -272,7 +270,7 @@ class: center, middle, inverse, large
 
 ???
 
-- Collaborative filtering: take ratings and make recommendations based similar users behavior
+- Collaborative filtering: use ratings to make recommendations based on users behavior (social graph)
 - Categorisation: Requires deep knowledge of the inventory of products. Each item must be profiled/rated.
 - Categorisation => Content based approach
 ---
@@ -299,6 +297,7 @@ class: center, middle, inverse, large
 
 - We don't look for Sessions with similar scores, and see what that person likes.
 - We attempt to predict what the Sessions's Page Views for a given Dog would be instead.
+- DO NOT MENTION WHAT WE THINK GUS WOULD BE!!!
 
 ---
 
@@ -360,12 +359,6 @@ class: center, middle, inverse, large
 
 ---
 
-# Image of the Dog -> Deviation->Session graph
-
-*Explain the relationships*
-
----
-
 # Deviation In Action - Belle to Gus
 
 |   | Belle | Gus |
@@ -381,9 +374,40 @@ class: center, middle, inverse, large
 
 ???
 
-- I have a Cypher query for this, but it's gnarly.
-- Worth noting, since it's averages, you can do some clever math to add new values.
+- For example this is Belle to Gus's deviation calculation
+- Optional: Could also store *2* - the number of sessions.
 - For simplicity's sake in my code, I just run it every minute.
+- Worth noting, since it's averages, you can do some clever math to add new values.
+- I have a Cypher query for this, but it's gnarly.
+
+
+1. For a Dog A, and a Dog B
+2. Get all the Sessions that have Page Views for both Dogs
+3. Count the total number of the above Sessions
+4. For each Session subtract the Page Views of Dog A by the Views of Dog B
+5. Divide each result from #4 with the total from #3
+6. Sum all the results from #5
+7. Save this value
+8. Repeat for all other dogs to each other
+9. Optional: Save the total number of Sessions for later use.
+
+---
+
+# Image of the Dog -> Deviation->Session graph
+
+*Explain the relationships*
+
+???
+
+1. For a Dog A, and a Dog B
+2. Get all the Sessions that have Page Views for both Dogs
+3. Count the total number of the above Sessions
+4. For each Session subtract the Page Views of Dog A by the Views of Dog B
+5. Divide each result from #4 with the total from #3
+6. Sum all the results from #5
+7. Save this value
+8. Repeat for all other dogs to each other
+9. Optional: Save the total number of Sessions for later use.
 
 ---
 class: cosy
@@ -416,6 +440,10 @@ class: cosy
 
 ???
 
+- Here we calculate the expected number of page views we would have for Dogs we haven't viewed.
+- Visually, it's far easier to decipher.
+- If you want to know *why* it works, please feel free to read the paper.
+
 ---
 name: slope
 
@@ -433,7 +461,7 @@ name: slope
 |   |  Gus | Belle | Sheba |
 |---|---|---|
 | A | 5 | 4 | 2 |
-| B |  .red[?] | 5 | 3 |
+| **B** |  .red[?] | 5 | 3 |
 | C | 1 | 3 | 1 |
 ]
 
@@ -441,6 +469,24 @@ name: slope
 {[(5 + -0.5) times 2] + [(3 + 1.5) times 3] } over {2 + 3} = { 9 + 13.5 } over { 5 } = 4.5
 -->
 .center[![Slope One](./images/slope-one.png)]
+
+???
+
+To explain this better, I've added an extra dog - Sheba
+
+1. Get the current Session
+2. Get a Dog (Recommended) that does not have a Page View for this Session
+3. Get all Dogs (Viewed) that have Page Views for this Session
+4. Get the total Page Views for a Viewed Dog
+5. Add the Deviation between the Recommended & the Viewed Dog to the total Page Views in #3
+6. Multiply the result of #5 by the total Sessions that have Page Views for both Dogs
+7. Repeat #4, #5 & #6 for all Viewed Dogs in #3
+8. Sum all the results from #7
+9. For each Viewed Dog, get the total Sessions that have Page Views for both Dogs
+10. Sum all the results from #6
+11. Divide #8 by #10
+12. Repeat #2 through #10 for every other Dog that does not have Page Views for this Session
+13. Sort in #12 in descending order
 
 ---
 
@@ -476,12 +522,38 @@ RETURN (numerator/denominator) as expectedViews, recommendation
 ORDER BY expectedViews DESC
 ```
 
+???
+
+- Does it for all Dogs in one go
+
+1. Get the current Session
+2. Get a Dog (Recommended) that does not have a Page View for this Session
+3. Get all Dogs (Viewed) that have Page Views for this Session
+4. Get the total Page Views for a Viewed Dog
+5. Add the Deviation between the Recommended & the Viewed Dog to the total Page Views in #3
+6. Multiply the result of #5 by the total Sessions that have Page Views for both Dogs
+7. Repeat #4, #5 & #6 for all Viewed Dogs in #3
+8. Sum all the results from #7
+9. For each Viewed Dog, get the total Sessions that have Page Views for both Dogs
+10. Sum all the results from #6
+11. Divide #8 by #10
+12. Repeat #2 through #10 for every other Dog that does not have Page Views for this Session
+13. Sort in #12 in descending order
+
 ---
 
 class: center, middle, inverse, large
 
 # Some dogs we thought you might like...
 <a href="http://localhost/?r=slope" target="_blank">open</a>
+
+---
+
+background-image: url("./images/best-cake.jpg")
+
+???
+
+Not only can we make cake, but we can make a really nice cake.
 
 ---
 
@@ -492,6 +564,9 @@ Source Code and Slides<br/>
 
 Adopt A Dog<br/>
 [http://adopt.compoundtheory.com/](http://adopt.compoundtheory.com/)
+
+Slope One Predictors for Online Rating-Based Collaborative Filtering<br/>
+[http://lemire.me/fr/abstracts/SDM2005.html](http://lemire.me/fr/abstracts/SDM2005.html)
 
 A Programmer's Guide to Data Mining<br/>
 [http://guidetodatamining.com/](http://guidetodatamining.com/)
