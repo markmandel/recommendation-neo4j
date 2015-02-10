@@ -4,6 +4,11 @@ class: center, middle, inverse, large
 # Recipes for Recommendations
 ## (with Neo4j)
 
+???
+
+- Usual spiel about being Australian
+- Happy for this to be fairly interactive.
+
 ---
 
 background-image: url("./images/me.jpg")
@@ -22,11 +27,9 @@ class: center, middle, inverse, large
 
 ???
 
-- A recommendation engine is a feature that filters items by predicting
-how a user might rate them.
+- A recommendation engine filters items by predicting how a user might rate them.
 
-- It solves the problem of connecting your existing users with the right items
-in your massive inventory.
+- Connecting your existing users with the items in your massive inventory.
 
 ---
 
@@ -85,9 +88,10 @@ background-image: url("./images/chocolate-cake.jpg")
 
 ### Process
 1. Heat oven to 356F.
-1. Line a large spring form tin with backing paper.
+1. Line a large spring form tin with baking paper.
 1. Mix all ingredients together.
 1. Bake for 30-40 minutes, until a skewer comes out clean.
+1. Serve
 
 ???
 
@@ -171,7 +175,9 @@ class: center, middle, inverse, large
 
 ???
 
+- First recipe
 - Can see this in the graph.
+- May also know this as "People who bought this product also bought"
 
 ---
 
@@ -188,6 +194,7 @@ class: center, middle, inverse, large
 1. Get all the other Dogs that the Sessions have also looked at
 1. Count the number of Page Views the other Dogs have
 1. Sort the Dog results by the number of Page Views descending
+1. Serve
 
 ---
 
@@ -248,7 +255,9 @@ class: center, middle, inverse, large
 
 ???
 
+- Second recommendation
 - Recommendations just for you
+- This one is a bit more involved
 
 ---
 
@@ -260,12 +269,12 @@ class: center, middle, inverse, large
 
 - Collaborative filtering: take ratings and make recommendations based similar users behavior
 - Categorisation: Requires deep knowledge of the inventory of products. Each item must be profiled/rated.
-
+- Categorisation => Content based approach
 ---
 
 class: center, middle, inverse, large
 
-# Item to Item Collaborative Filtering
+# User to User<br/>vs</br>Item to Item<br/>Collaborative Filtering
 
 ???
 
@@ -327,12 +336,15 @@ class: center, middle, inverse, large
 ### Process
 
 1. For a Dog A, and a Dog B
-1. Get all the Sessions that have Page Views for both Dogs
-1. For each Session subtract the Page Views of Dog A by the Views of Dog B
-1. Divide each Session's result by the total number of Sessions that have Page Views for both Dogs
-1. Add up the final results for each Session
-1. Save this value
-1. Repeat for all other dogs to each other.
+2. Get all the Sessions that have Page Views for both Dogs
+3. Count the total number of the above Sessions
+4. For each Session subtract the Page Views of Dog A by the Views of Dog B
+5. Divide each result from #4 with the total from #3
+6. Sum all the results from #5
+7. Save this value
+8. Repeat for all other dogs to each other
+9. Optional: Save the total number of Sessions for later use.
+10. Serve
 
 ???
 
@@ -357,9 +369,33 @@ class: center, middle, inverse, large
 ???
 
 - I have a Cypher query for this, but it's gnarly.
-- Batch process
 - Worth noting, since it's averages, you can do some clever math to add new values.
 - For simplicity's sake in my code, I just run it every minute.
+
+---
+
+# Recipe Execution: Weighted Slope One
+
+### Ingredients
+- Dogs
+- Deviations
+- Session Counts
+
+### Process
+
+1. Get the current Session
+2. Get a Dog (Recommedation) that has not been Viewed for this Session
+3. For each Dog (Viewed) that has been viewed by this Session add the deviation between the Recommendation Dog and the Viewed Dog to the Number of Page Views of the Viewed Dog
+4. Multiply the result of #3 by the Total Number of Sessions that have Page Views for both Dogs
+5. Sum all the results from #4
+6. For each Dog (Viewed) that has been viewed by this Session, get Total Number of Sessions that have Page Views for both Dogs
+7. Sum all the results from #6
+8. Divide the #4 by #6 - this is your expected number of Page Views
+1. Repeat for every other Dog that has not been viewed by this Session
+1. Sort in a descending order by expected Page Views
+1. Serve
+
+???
 
 ---
 
