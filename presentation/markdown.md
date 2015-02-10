@@ -360,6 +360,12 @@ class: center, middle, inverse, large
 
 ---
 
+# Image of the Dog -> Deviation->Session graph
+
+*Explain the relationships*
+
+---
+
 # Deviation In Action - Belle to Gus
 
 |   | Belle | Gus |
@@ -411,12 +417,6 @@ class: cosy
 ???
 
 ---
-
-# Image of the Dog -> Deviation->Session graph
-
-*Explain the relationships*
-
----
 name: slope
 
 # Weighted Slope One In Action
@@ -442,6 +442,46 @@ name: slope
 -->
 .center[![Slope One](./images/slope-one.png)]
 
+---
+
+# Recipe as Cypher Query
+
+```cypher
+//all dogs that have been 'rated'(viewed) for this session, with their view count
+MATCH (:MuxSession {ident: {ident}})
+       -[:HAS_VIEWED]->(view:PageView)-[:WITH_DOG]->(viewedDog:Dog)
+WITH viewedDog, COUNT(DISTINCT view) as pageViews
+
+//all dogs this session that have not been viewed, (and aren't adopted)
+MATCH (recommendation:Dog { adopted: false })
+WHERE NOT (:MuxSession {ident: {ident}})
+            -[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(recommendation)
+WITH DISTINCT recommendation, viewedDog, pageViews
+
+//for each dog that has been viewed, add the number of views
+//to the average deviation from recommendation->viewedDog
+MATCH (recommendation)
+        -[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)
+        <-[:R_DERIVATIVE]-(viewedDog)
+WITH ((derivative.derivative + pageViews) * derivative.totalSessions) as score,
+        derivative.totalSessions as totalSessions, recommendation
+
+//SUM all the new scores per recommendation for the numerators,
+//and the SUM of the totalSessions for the denominator
+WITH SUM(score) as numerator, SUM(totalSessions) as denominator, recommendation
+WHERE denominator > 0
+
+//Wrap it up in a bow, and hand it off
+RETURN (numerator/denominator) as expectedViews, recommendation
+ORDER BY expectedViews DESC
+```
+
+---
+
+class: center, middle, inverse, large
+
+# Some dogs we thought you might like...
+<a href="http://localhost/?r=slope" target="_blank">open</a>
 
 ---
 
