@@ -1,4 +1,3 @@
-nname: title
 class: center, middle, inverse, large
 
 # Recipes for Recommendations
@@ -78,6 +77,7 @@ background-image: url("./images/chocolate-cake.jpg")
 
 # (My Mother's) One Bowl Chocolate Cake
 
+.left-column[
 ### Ingredients
 - 2 cups of self raising flower
 - 2 cups of castor sugar
@@ -85,13 +85,15 @@ background-image: url("./images/chocolate-cake.jpg")
 - 4 ounces of melted butter
 - 1 cup of milk
 - 4 eggs
+]
 
+.right-column[
 ### Process
 1. Heat oven to 356F.
 1. Line a large spring form tin with baking paper.
 1. Mix all ingredients together.
 1. Bake for 30-40 minutes, until a skewer comes out clean.
-1. Serve
+]
 
 ???
 
@@ -183,18 +185,21 @@ class: center, middle, inverse, large
 
 # Recipe: Looked At This Dog Also Looked At...
 
+.left-column[
 ### Ingredients
 - Sessions
 - Page Views
 - Dogs
+]
 
+.right-column[
 ### Process
 1. Get the Dog currently being looked at
 1. Get all Sessions that have Page Views for this Dog
 1. Get all the other Dogs that the Sessions have also looked at
 1. Count the number of Page Views the other Dogs have
 1. Sort the Dog results by the number of Page Views descending
-1. Serve
+]
 
 ---
 
@@ -328,13 +333,15 @@ class: center, middle, inverse, large
 
 # Recipe Preparation: Weighted Slope One
 
+.left-column[
 ### Ingredients
 - Sessions
 - Page Views
 - Dogs
+]
 
+.right-column[
 ### Process
-
 1. For a Dog A, and a Dog B
 2. Get all the Sessions that have Page Views for both Dogs
 3. Count the total number of the above Sessions
@@ -344,7 +351,7 @@ class: center, middle, inverse, large
 7. Save this value
 8. Repeat for all other dogs to each other
 9. Optional: Save the total number of Sessions for later use.
-10. Serve
+]
 
 ???
 
@@ -357,7 +364,7 @@ class: center, middle, inverse, large
 
 |   | Belle | Gus |
 |---|---|---|
-| **Session A** | **4** | **5 **|
+| **Session A** | **4** | **5**|
 | Session B | 5 | .red[?] |
 | **Session C** | **3** | **1** |
 
@@ -373,29 +380,68 @@ class: center, middle, inverse, large
 - For simplicity's sake in my code, I just run it every minute.
 
 ---
+class: cosy
 
-# Recipe Execution: Weighted Slope One
+# Recipe: Weighted Slope One
 
+.left-column[
 ### Ingredients
 - Dogs
 - Deviations
 - Session Counts
+]
 
+.right-column[
 ### Process
-
 1. Get the current Session
-2. Get a Dog (Recommedation) that has not been Viewed for this Session
-3. For each Dog (Viewed) that has been viewed by this Session add the deviation between the Recommendation Dog and the Viewed Dog to the Number of Page Views of the Viewed Dog
-4. Multiply the result of #3 by the Total Number of Sessions that have Page Views for both Dogs
-5. Sum all the results from #4
-6. For each Dog (Viewed) that has been viewed by this Session, get Total Number of Sessions that have Page Views for both Dogs
-7. Sum all the results from #6
-8. Divide the #4 by #6 - this is your expected number of Page Views
-1. Repeat for every other Dog that has not been viewed by this Session
-1. Sort in a descending order by expected Page Views
-1. Serve
+2. Get a Dog (Recommended) that does not have a Page View for this Session
+3. Get all Dogs (Viewed) that have Page Views for this Session
+4. Get the total Page Views for a Viewed Dog
+5. Add the Deviation between the Recommended & the Viewed Dog to the total Page Views in #3
+6. Multiply the result of #5 by the total Sessions that have Page Views for both Dogs
+7. Repeat #4, #5 & #6 for all Viewed Dogs in #3
+8. Sum all the results from #7
+9. For each Viewed Dog, get the total Sessions that have Page Views for both Dogs
+10. Sum all the results from #6
+11. Divide #8 by #10
+12. Repeat #2 through #10 for every other Dog that does not have Page Views for this Session
+13. Sort in #12 in descending order
+]
 
 ???
+
+---
+
+# Image of the Dog -> Deviation->Session graph
+
+*Explain the relationships*
+
+---
+name: slope
+
+# Weighted Slope One In Action
+
+.right[
+|       | Belle | Gus | Sheba |
+|-------|-------|-----|-------|
+| Belle | X     | 0.5 | 2     |
+| Gus   | -0.5  | X   | 1.5   |
+| Sheba | -2    | -1.5| X     |
+]
+
+.left[
+|   |  Gus | Belle | Sheba |
+|---|---|---|
+| A | 5 | 4 | 2 |
+| B |  .red[?] | 5 | 3 |
+| C | 1 | 3 | 1 |
+]
+
+<!---
+{[(5 + -0.5) times 2] + [(3 + 1.5) times 3] } over {2 + 3} = { 9 + 13.5 } over { 5 } = 4.5
+-->
+.center[![Slope One](./images/slope-one.png)]
+
 
 ---
 
