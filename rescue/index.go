@@ -7,10 +7,12 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	processFlags(r.FormValue(flagQueryParam))
+
 	session, err := sessionStore.Get(r, siteSessionName)
 
 	if err != nil {
-		log.Printf("Error getting session: %v\n", err)
+		log.Printf("Error getting session: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -18,24 +20,29 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	dogs, err := models.ListDogs(db)
 
 	if err != nil {
-		log.Printf("Error listing dogs: %v\n", err)
+		log.Printf("Error listing dogs: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	recommendations, err := models.WeightedSlopeOneRecommendation(db, session)
+	var recommendations []*models.Dog
+	if showPersonalRecommendations {
+		recommendations, err = models.WeightedSlopeOneRecommendation(db, session)
 
-	if err != nil {
-		log.Printf("Error getting recommendations: %v\n", err)
-		http.Error(w, err.Error(), 500)
-		return
+		if err != nil {
+			log.Printf("Error getting recommendations: %v\n", err)
+			http.Error(w, err.Error(), 500)
+			return
+		}
+	} else {
+		recommendations = []*models.Dog{}
 	}
 
 	//save the session
 	err = session.Save(r, w)
 
 	if err != nil {
-		log.Printf("Error saving session: %v\n", err)
+		log.Printf("Error saving session: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -50,7 +57,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	err = indexTemplate.Execute(w, data)
 
 	if err != nil {
-		log.Printf("Error rendering template: %v\n", err)
+		log.Printf("Error rendering template: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}

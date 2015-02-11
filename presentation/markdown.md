@@ -124,16 +124,20 @@ class: center, middle, inverse, large
 - Dog Rescue++
 
 ---
+name: ingredients
 
 # Ingredients (Technical Stack)
 
-*Insert brand images?*
+.center[
+![Technical Stack](./images/tech-stack.png)
+]
 
-- Go
-- Neo4j
+
 
 ???
 
+- Go
+- Neo4j
 - Tech stack doesn't really matter.
 - We won't see the Go code. Check Github
 - Neo4j is a graph db
@@ -158,12 +162,21 @@ class: center, middle, inverse, large
 
 ---
 
-# Special Ingredient: Graph of Data
-
-*Image of Session->PageView->Dog*
+background-image: url("./images/pageView-graph.png")
 
 ???
 
+<!---
+MATCH (s:MuxSession)
+WITH s
+LIMIT 5
+MATCH (d:Dog)<-[:WITH_DOG]-(p:PageView)<-[:HAS_VIEWED]-(s)
+RETURN d, p, s
+LIMIT 50
+-->
+
+- Special Ingredient: Graph of Data
+- Session->PageView->Dog
 - See some relationships forming
 
 ---
@@ -200,11 +213,11 @@ class: center, middle, inverse, large
 
 ---
 
-# Recipe: Looked At This Dog Also Looked At...
-
-* Annotate(?) image with the explanation of the traversal
+background-image: url("./images/pageView-graph.png")
 
 ???
+
+Zeus is a good example
 
 1. Get the Dog currently being looked at
 1. Get all Sessions that have Page Views for this Dog
@@ -393,11 +406,11 @@ class: center, middle, inverse, large
 
 ---
 
-# Image of the Dog -> Deviation->Session graph
-
-*Explain the relationships*
+background-image: url("./images/deviation-graph.png")
 
 ???
+
+Image of the Dog -> Deviation
 
 1. For a Dog A, and a Dog B
 2. Get all the Sessions that have Page Views for both Dogs

@@ -10,6 +10,8 @@ import (
 )
 
 func dogHandler(w http.ResponseWriter, r *http.Request) {
+	processFlags(r.FormValue(flagQueryParam))
+
 	session, err := sessionStore.Get(r, siteSessionName)
 
 	if err != nil {
@@ -44,12 +46,17 @@ func dogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	alsoLookedAt, err := models.PeopleWhoLookedAtDogAlsoLookedAt(db, dog, session)
+	var alsoLookedAt []*models.Dog
+	if showLookedAtDogs {
+		alsoLookedAt, err = models.PeopleWhoLookedAtDogAlsoLookedAt(db, dog, session)
 
-	if err != nil {
-		log.Printf("Error getting looked at recommendation. %v", err)
-		http.Error(w, err.Error(), 500)
-		return
+		if err != nil {
+			log.Printf("Error getting looked at recommendation. %v", err)
+			http.Error(w, err.Error(), 500)
+			return
+		}
+	} else {
+		alsoLookedAt = []*models.Dog{}
 	}
 
 	data := map[string]interface{}{}
