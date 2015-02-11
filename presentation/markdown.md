@@ -320,7 +320,7 @@ class: center, middle, inverse, large
 
 ???
 
-- One of the simplest recommendation collab alrogithms to write.
+- One of the simplest collaborative filter algorithms to write.
 - Introduced in a 2005 paper by Daniel Lemire and Anna Maclachlan
 - Accuracy is often on par with more complicated and expensive algorithms
 - A great place to start doing recommendations
@@ -367,8 +367,10 @@ class: center, middle, inverse, large
 
 ???
 
+- BATCH PROCESS!!!
 - We calculate the sums of average deviations (the amount by which a single measurement differs from a fixed value) from one dog to another
 - This is called the deviation
+- run every minute on my machine - but there are faster ways to do it.
 
 ---
 
@@ -389,7 +391,7 @@ class: center, middle, inverse, large
 
 - For example this is Belle to Gus's deviation calculation
 - Optional: Could also store *2* - the number of sessions.
-- For simplicity's sake in my code, I just run it every minute.
+- For simplicity's sake in my code, I RUN THIS EVERY MINUTE.
 - Worth noting, since it's averages, you can do some clever math to add new values.
 - I have a Cypher query for this, but it's gnarly.
 
@@ -409,6 +411,14 @@ class: center, middle, inverse, large
 background-image: url("./images/deviation-graph.png")
 
 ???
+
+<!---
+MATCH (leftD:Dog)-[:L_DEVIATION]->(deviation:SlopeOneDeviation)<-[:R_DEVIATION]-(rightD:Dog)
+WHERE deviation.deviation > 0
+AND leftD.name = 'Abby'
+RETURN leftD, deviation, rightD
+LIMIT 25
+-->
 
 Image of the Dog -> Deviation
 
@@ -479,7 +489,7 @@ name: slope
 ]
 
 <!---
-{[(5 + -0.5) times 2] + [(3 + 1.5) times 3] } over {2 + 3} = { 9 + 13.5 } over { 5 } = 4.5
+{[(5 + -0.5) times 2] + [(3 + 1.5) times 2] } over {2 + 2} = { 9 + 9 } over { 4 } = 4.5
 -->
 .center[![Slope One](./images/slope-one.png)]
 
@@ -520,10 +530,10 @@ WITH DISTINCT recommendation, viewedDog, pageViews
 //for each dog that has been viewed, add the number of views
 //to the average deviation from recommendation->viewedDog
 MATCH (recommendation)
-        -[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)
-        <-[:R_DERIVATIVE]-(viewedDog)
-WITH ((derivative.derivative + pageViews) * derivative.totalSessions) as score,
-        derivative.totalSessions as totalSessions, recommendation
+        -[:L_DEVIATION]->(deviation:SlopeOneDeviation)
+        <-[:R_DEVIATION]-(viewedDog)
+WITH ((deviation.deviation + pageViews) * deviation.totalSessions) as score,
+        deviation.totalSessions as totalSessions, recommendation
 
 //SUM all the new scores per recommendation for the numerators,
 //and the SUM of the totalSessions for the denominator
@@ -578,11 +588,11 @@ Source Code and Slides<br/>
 Adopt A Dog<br/>
 [http://adopt.compoundtheory.com/](http://adopt.compoundtheory.com/)
 
-Slope One Predictors for Online Rating-Based Collaborative Filtering<br/>
-[http://lemire.me/fr/abstracts/SDM2005.html](http://lemire.me/fr/abstracts/SDM2005.html)
-
 A Programmer's Guide to Data Mining<br/>
 [http://guidetodatamining.com/](http://guidetodatamining.com/)
+
+Slope One Predictors for Online Rating-Based Collaborative Filtering<br/>
+[http://lemire.me/fr/abstracts/SDM2005.html](http://lemire.me/fr/abstracts/SDM2005.html)
 
 Coursera - Machine Learning<br/>
 [https://www.coursera.org/course/ml](https://www.coursera.org/course/ml)

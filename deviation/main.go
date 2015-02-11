@@ -18,12 +18,12 @@ func main() {
 		log.Fatalf("Could not connect to db: %v", err)
 	}
 
-	log.Printf("Starting to calculate derivatives...")
+	log.Printf("Starting to calculate deviations...")
 
-	err = models.CalculateWeightedSlopeOneDerivatives(db)
+	err = models.CalculateWeightedSlopeOneDeviation(db)
 
 	if err != nil {
-		log.Fatalf("Error calculating derivatives: %v", err)
+		log.Fatalf("Error calculating deviation: %v", err)
 	}
 
 	log.Printf("...Finished!")

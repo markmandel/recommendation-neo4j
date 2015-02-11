@@ -11,8 +11,8 @@ Calculating the initial deviation
 
 MATCH (leftD:Dog),(rightD:Dog)
 WHERE ID(leftD) = 547 AND ID(rightD) = 492
-MERGE (leftD)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD)
-RETURN derivative
+MERGE (leftD)-[:L_DEVIATION]->(deviation:SlopeOneDeviation)<-[:R_DEVIATION]-(rightD)
+RETURN deviation
 
 MATCH (leftS:MuxSession)-[:HAS_VIEWED]->(:PageView)-[:WITH_DOG]->(leftD:Dog)
 WHERE ID(leftD) = 547
@@ -25,7 +25,7 @@ WHERE
 	leftS = rightS
 
 WITH COUNT(DISTINCT leftS) as totalSessions //count how many sessions we have
-MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
+MATCH (leftD:Dog)-[:L_DEVIATION]->(d:SlopeOneDeviation)<-[:R_DEVIATION]-(rightD:Dog)
 WHERE ID(leftD) = 547 AND ID(rightD) = 492
 SET d.totalSessions = totalSessions //set the value of how many sessions we have. Need this for actual recommendations.
 
@@ -38,18 +38,18 @@ MATCH (rightS:MuxSession)-[:HAS_VIEWED]->(rightP:PageView)-[:WITH_DOG]->(rightD:
 WHERE ID(rightD) = 492
 AND leftS = rightS
 
-WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/totalSessions) as stepDerivative //get the average deviation for each session
+WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/totalSessions) as stepDeviation //get the average deviation for each session
 
-WITH SUM(stepDerivative) as derivative //add them all up
-MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
+WITH SUM(stepDeviation) as deviation //add them all up
+MATCH (leftD:Dog)-[:L_DEVIATION]->(d:SlopeOneDeviation)<-[:R_DEVIATION]-(rightD:Dog)
 WHERE ID(leftD) = 547 AND ID(rightD) = 492
-SET d.derivative = derivative //finally also set the actual deviation value.
+SET d.deviation = deviation //finally also set the actual deviation value.
 RETURN d
 */
 
-//CalculateWeightedSlopeOneDerivatives calculates and stores all the derivatives for all
+//CalculateWeightedSlopeOneDeviation calculates and stores all the deviations for all
 //the combinations of Dogs.
-func CalculateWeightedSlopeOneDerivatives(db *neoism.Database) error {
+func CalculateWeightedSlopeOneDeviation(db *neoism.Database) error {
 	dogs, err := ListDogs(db)
 
 	if err != nil {
@@ -60,12 +60,12 @@ func CalculateWeightedSlopeOneDerivatives(db *neoism.Database) error {
 
 	//for every combination of i and j
 	for counter, i := range dogs {
-		log.Printf("Calculating derivatives for block %v/%v", counter+1, total)
+		log.Printf("Calculating deviation for block %v/%v", counter+1, total)
 
 		qs := []*neoism.CypherQuery{}
 
 		for _, j := range dogs {
-			part := calculateSingleDerivative(db, i, j)
+			part := calculateSingleDeviation(db, i, j)
 			qs = append(qs, part...)
 		}
 
@@ -73,7 +73,7 @@ func CalculateWeightedSlopeOneDerivatives(db *neoism.Database) error {
 		tx, err := db.Begin(qs)
 
 		if err != nil {
-			log.Printf("Error attempting to store derivative values: %v. %#v.", err, qs)
+			log.Printf("Error attempting to store deviation values: %v. %#v.", err, qs)
 
 			err := tx.Rollback()
 
@@ -97,9 +97,9 @@ func CalculateWeightedSlopeOneDerivatives(db *neoism.Database) error {
 	return nil
 }
 
-//calculateSingleDerivative returns the Cypher query to calculates the derivative for a
+//calculateSingleDeviation returns the Cypher query to calculates the deviation for a
 //left and right dog
-func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) []*neoism.CypherQuery {
+func calculateSingleDeviation(db *neoism.Database, l *Dog, r *Dog) []*neoism.CypherQuery {
 	props := neoism.Props{"left": l.ID, "right": r.ID}
 	return []*neoism.CypherQuery{
 		//First create the relationship, if it's not there already
@@ -107,8 +107,8 @@ func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) []*neoism.Cy
 			Statement: `
 			MATCH (leftD:Dog),(rightD:Dog)
 			WHERE ID(leftD) = {left} AND ID(rightD) = {right}
-			MERGE (leftD)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD)
-			RETURN derivative
+			MERGE (leftD)-[:L_DEVIATION]->(deviation:SlopeOneDeviation)<-[:R_DEVIATION]-(rightD)
+			RETURN deviation
 			`,
 			Parameters: props,
 		},
@@ -125,7 +125,7 @@ func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) []*neoism.Cy
 				leftS = rightS
 			WITH COUNT(DISTINCT leftS) as totalSessions //count how many sessions we have
 
-			MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
+			MATCH (leftD:Dog)-[:L_DEVIATION]->(d:SlopeOneDeviation)<-[:R_DEVIATION]-(rightD:Dog)
 			WHERE ID(leftD) = {left} AND ID(rightD) = {right}
 			SET d.totalSessions = totalSessions //set the value of how many sessions we have. Need this for actual recommendations.
 			WITH totalSessions
@@ -137,13 +137,13 @@ func calculateSingleDerivative(db *neoism.Database, l *Dog, r *Dog) []*neoism.Cy
 			MATCH (rightS:MuxSession)-[:HAS_VIEWED]->(rightP:PageView)-[:WITH_DOG]->(rightD:Dog)
 			WHERE ID(rightD) = {right}
 			AND leftS = rightS
-			WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/totalSessions) as stepDerivative //get the average deviation for each session
+			WITH leftS, (TOFLOAT((leftTotal - COUNT(DISTINCT rightP)))/totalSessions) as stepDeviation //get the average deviation for each session
 
-			WITH SUM(stepDerivative) as derivative //add them all up
+			WITH SUM(stepDeviation) as deviation //add them all up
 
-			MATCH (leftD:Dog)-[:L_DERIVATIVE]->(d:SlopeOneDerivative)<-[:R_DERIVATIVE]-(rightD:Dog)
+			MATCH (leftD:Dog)-[:L_DEVIATION]->(d:SlopeOneDeviation)<-[:R_DEVIATION]-(rightD:Dog)
 			WHERE ID(leftD) = {left} AND ID(rightD) = {right}
-			SET d.derivative = derivative //finally also set the actual deviation value.
+			SET d.deviation = deviation //finally also set the actual deviation value.
 			RETURN d
 			`,
 			Parameters: props,
@@ -164,8 +164,8 @@ WHERE NOT (:MuxSession {ident: 'GP5OJLWCLPI7CVSVJQGFN7TSUIW7Z6Q5IKZ7DSO6Z2F2IJK5
 WITH DISTINCT recommendation, breed, viewedDog, pageViews
 
 //for each dog that has been viewed, add the number of views to the average deviation from recommendation->viewedDog
-MATCH (recommendation)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(viewedDog)
-WITH ((derivative.derivative + pageViews) * derivative.totalSessions) as score, derivative.totalSessions as totalSessions, recommendation, breed
+MATCH (recommendation)-[:L_DEVIATION]->(deviation:SlopeOneDeviation)<-[:R_DEVIATION]-(viewedDog)
+WITH ((deviation.deviation + pageViews) * deviation.totalSessions) as score, deviation.totalSessions as totalSessions, recommendation, breed
 
 //SUM all the new scores per recommendation for the numerators, and the SUM of the totalSessions for the denominator
 WITH SUM(score) as numerator, SUM(totalSessions) as denominator, recommendation, breed
@@ -198,8 +198,8 @@ func WeightedSlopeOneRecommendation(db *neoism.Database, s *sessions.Session) (r
 		WITH DISTINCT recommendation, breed, viewedDog, pageViews
 
 		//for each dog that has been viewed, add the number of views to the average deviation from recommendation->viewedDog
-		MATCH (recommendation)-[:L_DERIVATIVE]->(derivative:SlopeOneDerivative)<-[:R_DERIVATIVE]-(viewedDog)
-		WITH ((derivative.derivative + pageViews) * derivative.totalSessions) as score, derivative.totalSessions as totalSessions, recommendation, breed
+		MATCH (recommendation)-[:L_DEVIATION]->(deviation:SlopeOneDeviation)<-[:R_DEVIATION]-(viewedDog)
+		WITH ((deviation.deviation + pageViews) * deviation.totalSessions) as score, deviation.totalSessions as totalSessions, recommendation, breed
 
 		//SUM all the new scores per recommendation for the numerators, and the SUM of the totalSessions for the denominator
 		WITH SUM(score) as numerator, SUM(totalSessions) as denominator, recommendation, breed

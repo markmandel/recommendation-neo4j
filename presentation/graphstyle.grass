@@ -66,12 +66,12 @@ node.PageView {
 	font-size: 10px;
 }
 
-node.SlopeOneDerivative {
+node.SlopeOneDeviation {
 	color: #AD62CE;
 	border-color: #9453B1;
 	text-color-internal: #FFFFFF;
 	font-size: 15px;
-	caption: '{derivative}';
+	caption: '{deviation}';
 }
 
 relationship.WITH_DOG {
