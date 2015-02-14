@@ -495,7 +495,9 @@ name: slope
 
 ???
 
-To explain this better, I've added an extra dog - Sheba
+- Calculating the expected recommendation for SessionB: Gus.
+- To explain this better, I've added an extra dog - Sheba
+- Move horizontally across from Session B.
 
 1. Get the current Session
 2. Get a Dog (Recommended) that does not have a Page View for this Session
