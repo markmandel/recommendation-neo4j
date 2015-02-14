@@ -1,6 +1,10 @@
 Building a Recommendation Engine with Neo4J
 ===========================================
 
+## Presentation Slides
+
+Slides can be viewed [here](http://markmandel.github.io/recommendation-neo4j/presentation)
+
 ## Installation
 To run this code, you will need several things installed:
 - [Docker](https://www.docker.com/)
