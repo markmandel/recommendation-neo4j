@@ -54,6 +54,7 @@ class: center, middle, inverse, large
 
 ???
 
+- GENERALLY HAVING A RECOMMENDATION ENGINE IS BETTER THAN NOT
 - Recommendation engine etc - HARD problem (where do I start?)
 - Feels Impenetrable
 
@@ -98,6 +99,7 @@ background-image: url("./images/chocolate-cake.jpg")
 ???
 
 - Suddenly this doesn't seem so hard
+- CAKE IS BETTER THAN NO CAKE (Same as recommendations)
 
 ---
 
